@@ -1307,102 +1307,11 @@
       .partners-grid { grid-template-columns: 1fr; }
     }
   
-    /* Quick Shortcuts Floating Dock (Right edge) */
-    .floating-shortcuts {
-      position: fixed;
-      right: 18px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 999;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .shortcut-item {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: rgba(18, 20, 23, 0.92);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #ffffff;
-      position: relative;
-      transition: all 0.25s ease;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      text-decoration: none;
-    }
-    .shortcut-item:hover {
-      transform: scale(1.12);
-      border-color: #E11938;
-      background: #1B1E22;
-      box-shadow: 0 0 20px rgba(225, 25, 56, 0.5);
-    }
-    .shortcut-item svg { width: 22px; height: 22px; fill: currentColor; }
-    .shortcut-item.whatsapp:hover { color: #25D366; border-color: #25D366; box-shadow: 0 0 20px rgba(37, 211, 102, 0.5); }
-    .shortcut-item.youtube:hover { color: #FF0000; border-color: #FF0000; box-shadow: 0 0 20px rgba(255, 0, 0, 0.5); }
-    .shortcut-item.email:hover { color: #3B82F6; border-color: #3B82F6; box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
-    .shortcut-item.phone:hover { color: #E11938; border-color: #E11938; }
-
-    .shortcut-tooltip {
-      position: absolute;
-      right: 58px;
-      background: #111315;
-      color: #fff;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 6px 12px;
-      border-radius: 6px;
-      white-space: nowrap;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      opacity: 0;
-      pointer-events: none;
-      transform: translateX(10px);
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    }
-    .shortcut-item:hover .shortcut-tooltip {
-      opacity: 1;
-      transform: translateX(0);
-    }
-
-    @media (max-width: 768px) {
-      .floating-shortcuts { display: none; }
-    }
+    
 
   </style>
 </head>
 <body>
-
-  <!-- Floating Quick Shortcuts Dock (From original tps-tech.com) -->
-  <div class="floating-shortcuts">
-    <!-- WhatsApp -->
-    <a href="https://wa.me/8613906740412" target="_blank" class="shortcut-item whatsapp" title="Chat on WhatsApp">
-      <svg viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766 0-3.18-2.587-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86.174.086.275.072.376-.043.101-.116.433-.506.549-.68.116-.173.231-.144.39-.086s1.011.477 1.184.564.289.13.332.202c.043.073.043.419-.101.824zM12 2C6.477 2 2 6.477 2 12c0 1.891.524 3.66 1.434 5.174L2 22l4.981-1.306A9.957 9.957 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2z"/></svg>
-      <span class="shortcut-tooltip">WhatsApp: +86 13906740412</span>
-    </a>
-
-    <!-- YouTube -->
-    <a href="https://www.youtube.com/@tpstechnology" target="_blank" class="shortcut-item youtube" title="Watch Videos">
-      <svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-      <span class="shortcut-tooltip">Watch Machine Videos</span>
-    </a>
-
-    <!-- Email -->
-    <a href="mailto:info@tps-tech.com" class="shortcut-item email" title="Email Factory">
-      <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-      <span class="shortcut-tooltip">info@tps-tech.com</span>
-    </a>
-
-    <!-- Phone -->
-    <a href="tel:+8613906740412" class="shortcut-item phone" title="Call Factory">
-      <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-      <span class="shortcut-tooltip">+86 13906740412</span>
-    </a>
-  </div>
 
 
   <!-- Top Announcement Bar -->
