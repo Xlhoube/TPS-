@@ -359,7 +359,6 @@ function deleteTpsLead(id) {
   saveTpsData(data);
 }
 
-// Machines Operations
 function saveMachine(machine) {
   const data = getTpsData();
   if (machine.id) {
@@ -373,6 +372,30 @@ function saveMachine(machine) {
     machine.id = 'm-' + Date.now();
     data.machines.push(machine);
   }
+
+  // Sync machine.videoUrl with videoSlots
+  if (machine.videoUrl) {
+    const cleanUrl = (machine.videoUrl || '').trim();
+    const mod = (machine.model || '').toLowerCase();
+    const slotId = mod.includes('2516') ? 'machine_tps2516'
+      : mod.includes('b130') ? 'machine_tpsb130'
+      : mod.includes('af3220') ? 'machine_tpsaf3220'
+      : ('machine_' + machine.id);
+
+    if (!data.videoSlots) data.videoSlots = [];
+    const slot = data.videoSlots.find(s => s.id === slotId);
+    if (slot) {
+      slot.url = cleanUrl;
+    } else {
+      data.videoSlots.push({
+        id: slotId,
+        label: `Máquina: ${machine.model || 'Equipamento'}`,
+        url: cleanUrl,
+        defaultTitle: machine.videoTitle || machine.model
+      });
+    }
+  }
+
   saveTpsData(data);
   return machine;
 }
@@ -477,14 +500,13 @@ function saveVideoSlotUrl(slotId, url) {
     data.videoSlots.push({ id: slotId, label: slotId, url: cleanUrl, defaultTitle: slotId });
   }
   // Sync with machine if it corresponds to an equipment
-  if (slotId === 'machine_tps2516') {
-    const m = data.machines.find(x => (x.model || x.title || '').includes('2516'));
-    if (m) m.videoUrl = cleanUrl;
-  } else if (slotId === 'machine_tpsb130') {
-    const m = data.machines.find(x => (x.model || x.title || '').includes('B130'));
-    if (m) m.videoUrl = cleanUrl;
-  } else if (slotId === 'machine_tpsaf3220') {
-    const m = data.machines.find(x => (x.model || x.title || '').includes('AF3220'));
+  if (slotId.startsWith('machine_')) {
+    const rawId = slotId.replace('machine_', '');
+    const m = (data.machines || []).find(x => 
+      (x.id && (x.id === rawId || ('machine_' + x.id) === slotId)) ||
+      (x.model && slotId.toLowerCase().includes(x.model.toLowerCase().replace(/[^a-z0-9]/g, ''))) ||
+      (x.title && slotId.toLowerCase().includes(x.title.toLowerCase().replace(/[^a-z0-9]/g, '')))
+    );
     if (m) m.videoUrl = cleanUrl;
   }
   saveTpsData(data);
@@ -672,60 +694,65 @@ function resolveTpsSlotVideo(slotOrTitle) {
     const data = typeof getTpsData === 'function' ? getTpsData() : null;
     if (!data) return { title: slotOrTitle || 'Demonstração TPS', url: 'https://www.youtube.com/watch?v=GMqbIyp5d2I', fallbackId: 'GMqbIyp5d2I' };
 
-    // 1. Direct slot ID
+    const q = (slotOrTitle || '').trim().toLowerCase();
+
+    // 1. Direct slot ID (exact or case-insensitive)
     if (data.videoSlots && Array.isArray(data.videoSlots)) {
-      const direct = data.videoSlots.find(s => s.id === slotOrTitle);
+      const direct = data.videoSlots.find(s => s.id === slotOrTitle || s.id.toLowerCase() === q);
       if (direct && direct.url && direct.url.trim()) {
         return { title: direct.label || direct.defaultTitle || slotOrTitle, url: direct.url.trim(), fallbackId: 'GMqbIyp5d2I' };
       }
     }
 
-    // 2. Direct machine match
+    // 2. Hero slot check (BEFORE machine check so Hero is never shadowed by machine 2516!)
+    if (q === 'hero' || q.includes('hero') || q.includes('speed run') || q.includes('production demo')) {
+      const s = (data.videoSlots || []).find(x => x.id === 'hero');
+      if (s && s.url && s.url.trim()) {
+        return { title: s.label || 'TPS-2516 Flatbed Cutter — 4K Speed Run', url: s.url.trim(), fallbackId: 'GMqbIyp5d2I' };
+      }
+    }
+
+    // 3. Direct machine match
     if (data.machines && Array.isArray(data.machines)) {
-      const q = (slotOrTitle || '').toLowerCase();
       const mach = data.machines.find(m => {
         const mod = (m.model || '').toLowerCase();
         const tit = (m.title || '').toLowerCase();
-        return (mod && q.includes(mod)) || (tit && q.includes(tit));
+        const id = (m.id || '').toLowerCase();
+        return (id && q === id) || (mod && (q === mod || q.includes(mod))) || (tit && q.includes(tit));
       });
       if (mach && mach.videoUrl && mach.videoUrl.trim()) {
         return { title: mach.videoTitle || mach.model || slotOrTitle, url: mach.videoUrl.trim(), fallbackId: 'GMqbIyp5d2I' };
       }
     }
 
-    // 3. Keyword matching across known components
-    const q = (slotOrTitle || '').toLowerCase();
-    if (q.includes('hero') || q.includes('speed run') || q.includes('production demo')) {
-      const s = (data.videoSlots || []).find(x => x.id === 'hero');
-      return { title: s?.label || 'TPS-2516 Flatbed Cutter — 4K Speed Run', url: s?.url || 'https://www.youtube.com/watch?v=GMqbIyp5d2I', fallbackId: 'GMqbIyp5d2I' };
-    }
+    // 4. Keyword matching across known components
     if (q.includes('2516')) {
       const s = (data.videoSlots || []).find(x => x.id === 'machine_tps2516');
-      return { title: s?.label || 'TPS-2516 Flatbed Cutter', url: s?.url || 'https://www.youtube.com/watch?v=GMqbIyp5d2I', fallbackId: 'GMqbIyp5d2I' };
+      if (s && s.url && s.url.trim()) return { title: s.label || 'TPS-2516 Flatbed Cutter', url: s.url.trim(), fallbackId: 'GMqbIyp5d2I' };
     }
     if (q.includes('b130') || q.includes('bender')) {
       const s = (data.videoSlots || []).find(x => x.id === 'machine_tpsb130');
-      return { title: s?.label || 'TPS-B130 CNC Channel Letter Bender', url: s?.url || 'https://www.youtube.com/watch?v=ICYHOPTF7Ac', fallbackId: 'ICYHOPTF7Ac' };
+      if (s && s.url && s.url.trim()) return { title: s.label || 'TPS-B130 CNC Channel Letter Bender', url: s.url.trim(), fallbackId: 'ICYHOPTF7Ac' };
     }
     if (q.includes('af3220') || q.includes('conveyor')) {
       const s = (data.videoSlots || []).find(x => x.id === 'machine_tpsaf3220');
-      return { title: s?.label || 'TPS-AF3220 Automated Conveyor Finishing Line', url: s?.url || 'https://www.youtube.com/watch?v=RQa0hvsg10s', fallbackId: 'RQa0hvsg10s' };
+      if (s && s.url && s.url.trim()) return { title: s.label || 'TPS-AF3220 Automated Conveyor Finishing Line', url: s.url.trim(), fallbackId: 'RQa0hvsg10s' };
     }
     if (q.includes('tool') || q.includes('oscillating') || q.includes('cabeçote') || q.includes('faca') || q.includes('eot') || q.includes('router') || q.includes('spindle')) {
       const s = (data.videoSlots || []).find(x => x.id === 'tool_modular');
-      return { title: s?.label || 'TPS Modular Cutting Tools in Action', url: s?.url || 'https://www.youtube.com/watch?v=668QHcUPkt4', fallbackId: '668QHcUPkt4' };
+      if (s && s.url && s.url.trim()) return { title: s.label || 'TPS Modular Cutting Tools in Action', url: s.url.trim(), fallbackId: '668QHcUPkt4' };
     }
     if (q.includes('acrylic') || q.includes('acrílico') || q.includes('card 1') || q.includes('gallery_1')) {
       const s = (data.videoSlots || []).find(x => x.id === 'gallery_1');
-      return { title: s?.label || '20mm Cast Acrylic Edge Milling', url: s?.url || 'https://www.youtube.com/watch?v=hEXpDpmNIVk', fallbackId: 'hEXpDpmNIVk' };
+      if (s && s.url && s.url.trim()) return { title: s.label || '20mm Cast Acrylic Edge Milling', url: s.url.trim(), fallbackId: 'hEXpDpmNIVk' };
     }
     if (q.includes('corrugated') || q.includes('packaging') || q.includes('embalagen') || q.includes('cartão') || q.includes('card 2') || q.includes('gallery_2')) {
       const s = (data.videoSlots || []).find(x => x.id === 'gallery_2');
-      return { title: s?.label || 'Corrugated Box Creasing & Cutting', url: s?.url || 'https://www.youtube.com/watch?v=qtu6dGmeJA4', fallbackId: 'qtu6dGmeJA4' };
+      if (s && s.url && s.url.trim()) return { title: s.label || 'Corrugated Box Creasing & Cutting', url: s.url.trim(), fallbackId: 'qtu6dGmeJA4' };
     }
     if (q.includes('flanging') || q.includes('letter') || q.includes('corpóre') || q.includes('card 3') || q.includes('gallery_3')) {
       const s = (data.videoSlots || []).find(x => x.id === 'gallery_3');
-      return { title: s?.label || 'Automated Channel Letter Bending', url: s?.url || 'https://www.youtube.com/watch?v=ICYHOPTF7Ac', fallbackId: 'ICYHOPTF7Ac' };
+      if (s && s.url && s.url.trim()) return { title: s.label || 'Automated Channel Letter Bending', url: s.url.trim(), fallbackId: 'ICYHOPTF7Ac' };
     }
   } catch (err) {
     console.warn("resolveTpsSlotVideo error:", err);

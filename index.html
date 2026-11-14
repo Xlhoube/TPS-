@@ -1518,7 +1518,7 @@
 
         <div class="hero-actions">
           <a href="#equipment" class="btn btn-glow" data-i18n="hero_cta_1">Explore Machinery</a>
-          <button onclick="openVideoModal('TPS-2516 Flatbed Cutter — Full Speed Production Demo')" class="btn btn-glass">
+          <button onclick="openVideoModal('hero')" class="btn btn-glass">
             <svg width="18" height="18" fill="var(--tps-red)" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
             <span data-i18n="hero_cta_2">Watch 4K Machine Demo</span>
           </button>
@@ -1537,7 +1537,7 @@
           </div>
 
           <!-- Interactive Viewport -->
-          <div class="video-viewport" onclick="openVideoModal('TPS-2516 Flatbed Cutter — 4K Speed Run')">
+          <div class="video-viewport" id="heroVideoViewport" onclick="playHeroVideoInline(this)">
             <div class="cutting-simulation">
               <div class="simulation-crosshair"></div>
               <div class="simulation-beam"></div>
@@ -1550,9 +1550,9 @@
             <div class="viewport-overlay">
               <div class="video-info">
                 <span>Robotic Cutting in Action</span>
-                <strong>TPS-2516 Flatbed Finishing System</strong>
+                <strong id="heroViewportTitle">TPS-2516 Flatbed Finishing System</strong>
               </div>
-              <div class="video-badge-4k">4K UHD</div>
+              <div class="video-badge-4k">▶ ASSISTIR NA PÁGINA</div>
             </div>
           </div>
 
@@ -2511,6 +2511,11 @@
             { label: "Registration", value: "High-Res CCD Camera" }
           ];
 
+          const machSlotId = model.toLowerCase().includes('2516') ? 'machine_tps2516'
+            : model.toLowerCase().includes('b130') ? 'machine_tpsb130'
+            : model.toLowerCase().includes('af3220') ? 'machine_tpsaf3220'
+            : ('machine_' + (m.id || 'custom'));
+
           return `
             <div class="eq-card" data-category="${m.category || 'cutter'}">
               <div class="eq-preview">
@@ -2528,7 +2533,7 @@
                     <span>${escapeHtml(sub)}</span>
                   </div>
                 `}
-                <button onclick="openVideoModal('${escapeHtml(model)}')" class="eq-video-btn">
+                <button onclick="openVideoModal('${machSlotId}', '${(m.videoUrl || '').replace(/'/g, "\\'")}', '${escapeHtml(model)}')" class="eq-video-btn">
                   ▶ Video Demo
                 </button>
               </div>
@@ -2541,7 +2546,7 @@
                   `).join('')}
                 </div>
                 <div class="eq-card-actions">
-                  <button onclick="openVideoModal('${escapeHtml(model)}')" class="btn btn-glass btn-sm">Watch Video</button>
+                  <button onclick="openVideoModal('${machSlotId}', '${(m.videoUrl || '').replace(/'/g, "\\'")}', '${escapeHtml(model)}')" class="btn btn-glass btn-sm">Watch Video</button>
                   <a href="#contact" class="btn btn-glow btn-sm" onclick="prefillInquiryEquipment('${escapeHtml(model)}')">Request Quote</a>
                 </div>
               </div>
@@ -2589,7 +2594,7 @@
             const hasVideo = !!(s.url && s.url.trim());
             const displayTitle = s.label || s.defaultTitle || `Vídeo Demonstração #${idx + 1}`;
             return `
-              <div class="video-thumb-card" onclick="openVideoModal('${s.id}', '${(s.url || '').replace(/'/g, "\\'")}')">
+              <div class="video-thumb-card" onclick="openVideoModal('${s.id}', '${(s.url || '').replace(/'/g, "\\'")}', '${escapeHtml(displayTitle)}')">
                 <div class="thumb-screen">
                   <div class="mini-play"><svg viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg></div>
                   <span class="thumb-time">${hasVideo ? '▶ ASSISTIR' : '4K DEMO'}</span>
@@ -2603,7 +2608,7 @@
           }).join('');
         } else if (data.videos && data.videos.length > 0) {
           videoGrid.innerHTML = data.videos.map(v => `
-            <div class="video-thumb-card" onclick="openVideoModal('${v.title.replace(/'/g, "\\'")}', '${(v.videoUrl || '').replace(/'/g, "\\'")}')">
+            <div class="video-thumb-card" onclick="openVideoModal('${v.title.replace(/'/g, "\\'")}', '${(v.videoUrl || '').replace(/'/g, "\\'")}', '${escapeHtml(v.title)}')">
               <div class="thumb-screen">
                 <div class="mini-play"><svg viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg></div>
                 <span class="thumb-time">${v.duration || '02:00'}</span>
@@ -2641,16 +2646,46 @@
       return { title: slotOrTitle || 'Demonstração TPS', url: 'https://www.youtube.com/watch?v=GMqbIyp5d2I', fallbackId: 'GMqbIyp5d2I' };
     }
 
-    function openVideoModal(slotOrTitle, url) {
-      let finalTitle = slotOrTitle || 'TPS Machine Demonstration';
+    function playHeroVideoInline() {
+      const resolved = resolveSlotVideo('hero');
+      const parsed = (typeof parseVideoSource === 'function')
+        ? parseVideoSource(resolved.url, resolved.fallbackId || 'GMqbIyp5d2I')
+        : { type: 'youtube', embedUrl: 'https://www.youtube.com/embed/GMqbIyp5d2I?autoplay=1&rel=0' };
+
+      const viewport = document.getElementById('heroVideoViewport');
+      if (viewport) {
+        if (typeof generatePlayerHtml === 'function') {
+          viewport.innerHTML = generatePlayerHtml(parsed);
+        } else {
+          viewport.innerHTML = `
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; border-radius: 12px; overflow: hidden; z-index: 10;">
+              <iframe 
+                src="${parsed.embedUrl}" 
+                style="width: 100%; height: 100%; border: 0;" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen>
+              </iframe>
+            </div>
+          `;
+        }
+        viewport.onclick = null;
+      }
+    }
+
+    function openVideoModal(slotOrTitle, url, explicitTitle) {
+      let finalTitle = explicitTitle || slotOrTitle || 'TPS Machine Demonstration';
       let finalUrl = (url || '').trim();
       let fallbackId = 'GMqbIyp5d2I';
 
-      if (!finalUrl) {
+      if (!finalUrl || finalUrl === '') {
         const resolved = resolveSlotVideo(slotOrTitle);
         finalUrl = (resolved.url || '').trim();
-        if (resolved.title) finalTitle = resolved.title;
+        if (!explicitTitle && resolved.title) finalTitle = resolved.title;
         if (resolved.fallbackId) fallbackId = resolved.fallbackId;
+      } else if (!explicitTitle) {
+        const resolved = resolveSlotVideo(slotOrTitle);
+        if (resolved.title) finalTitle = resolved.title;
       }
 
       const modalTitle = document.getElementById('videoModalTitle');

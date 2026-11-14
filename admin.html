@@ -1461,6 +1461,11 @@
           </div>
 
           <div class="form-group">
+            <label>Link do Vídeo Demonstrativo (YouTube, Vimeo ou MP4)</label>
+            <input type="url" id="machVideoUrl" placeholder="Ex: https://www.youtube.com/watch?v=... ou https://youtu.be/..." />
+          </div>
+
+          <div class="form-group">
             <label>Foto / Imagem do Equipamento (URL ou caminho local)</label>
             <input type="text" id="machImageUrl" placeholder="Ex: assets/tps-2516.png ou https://..." oninput="updateMachImagePreview(this.value)" />
             <div id="machImagePreviewBox" style="margin-top: 8px; display: none; height: 130px; border-radius: 8px; border: 1px solid var(--tps-border); background: #000; overflow: hidden; align-items: center; justify-content: center;">
@@ -2027,7 +2032,29 @@
       if (!container) return;
 
       const data = getTpsData();
-      const currentSlots = (data.videoSlots && data.videoSlots.length > 0) ? data.videoSlots : (DEFAULT_TPS_DATA.videoSlots || []);
+      const currentSlots = (data.videoSlots && data.videoSlots.length > 0) ? [...data.videoSlots] : [...(DEFAULT_TPS_DATA.videoSlots || [])];
+
+      // Merge any machine into slots if not present
+      if (data.machines && Array.isArray(data.machines)) {
+        data.machines.forEach(m => {
+          const mod = (m.model || '').toLowerCase();
+          const slotId = mod.includes('2516') ? 'machine_tps2516'
+            : mod.includes('b130') ? 'machine_tpsb130'
+            : mod.includes('af3220') ? 'machine_tpsaf3220'
+            : ('machine_' + m.id);
+          const found = currentSlots.find(s => s.id === slotId);
+          if (!found) {
+            currentSlots.push({
+              id: slotId,
+              label: `Máquina: ${m.model || 'Equipamento'}`,
+              url: m.videoUrl || '',
+              defaultTitle: m.videoTitle || m.model
+            });
+          } else if (m.videoUrl && (!found.url || !found.url.trim())) {
+            found.url = m.videoUrl;
+          }
+        });
+      }
 
       // Populate Quick Assign Dropdown
       if (selectSlot) {
@@ -2249,6 +2276,7 @@
 
       document.getElementById('machDesc').value = '';
       document.getElementById('machVideoTitle').value = '';
+      document.getElementById('machVideoUrl').value = '';
       document.getElementById('machImageUrl').value = '';
       updateMachImagePreview('');
       document.getElementById('machSpec1').value = 'Up to 1500 mm/s';
@@ -2285,6 +2313,7 @@
 
       document.getElementById('machDesc').value = m.desc || '';
       document.getElementById('machVideoTitle').value = m.videoTitle || '';
+      document.getElementById('machVideoUrl').value = m.videoUrl || '';
       document.getElementById('machImageUrl').value = m.imageUrl || '';
       updateMachImagePreview(m.imageUrl || '');
 
@@ -2312,6 +2341,7 @@
       const category = document.getElementById('machCategory').value;
       const desc = document.getElementById('machDesc').value.trim();
       const videoTitle = document.getElementById('machVideoTitle').value.trim() || `${model} Video Demo`;
+      const videoUrl = document.getElementById('machVideoUrl').value.trim();
       const imageUrl = document.getElementById('machImageUrl').value.trim();
 
       const specs = [
@@ -2332,6 +2362,7 @@
         desc,
         specs,
         videoTitle,
+        videoUrl,
         imageUrl,
         active: true
       });
