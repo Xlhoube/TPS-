@@ -2170,6 +2170,7 @@
         </p>
       </div>
     </div>
+  </div>
   <!-- TPS Shared Dynamic Data Layer -->
   <script src="data.js"></script>
 
@@ -2426,19 +2427,14 @@
       const videoGrid = document.getElementById('mainVideoShowcaseGrid');
       if (videoGrid && data.videos && data.videos.length > 0) {
         videoGrid.innerHTML = data.videos.map(v => `
-          <div class="video-card" onclick="openVideoModal('${v.title.replace(/'/g, "\\'")}')">
-            <div class="video-thumb">
-              <div class="video-duration">${v.duration}</div>
-              <div class="play-btn-circle">
-                <svg viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
-              </div>
-              <div style="font-size: 11px; letter-spacing: 0.1em; color: var(--tps-red); font-weight: 700; text-transform: uppercase;">
-                ${v.tag}
-              </div>
+          <div class="video-thumb-card" onclick="openVideoModal('${v.title.replace(/'/g, "\\'")}', '${(v.videoUrl || '').replace(/'/g, "\\'")}')">
+            <div class="thumb-screen">
+              <div class="mini-play"><svg viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg></div>
+              <span class="thumb-time">${v.duration || '02:00'}</span>
             </div>
-            <div class="video-info">
-              <h4 style="font-size: 15px; font-weight: 700; color: #ffffff; margin-bottom: 4px;">${v.title}</h4>
-              <p style="font-size: 12px; color: #9CA3AF; line-height: 1.5;">${v.desc}</p>
+            <div class="video-thumb-info">
+              <strong>${v.title}</strong>
+              <span>${v.subtitle || v.desc || 'Demonstração de precisão e velocidade'}</span>
             </div>
           </div>
         `).join('');
@@ -2461,18 +2457,54 @@
       });
     }
 
-    function openVideoModal(title) {
-      document.getElementById('videoModalTitle').textContent = title;
-      document.getElementById('videoPlayerName').textContent = title;
+    function openVideoModal(title, url) {
+      const modalTitle = document.getElementById('videoModalTitle');
+      if (modalTitle) modalTitle.textContent = title || 'TPS Machine Demonstration';
+      const playerBody = document.querySelector('.modal-player-body');
+      
+      if (playerBody) {
+        if (url && (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com') || url.endsWith('.mp4'))) {
+          let embedHtml = '';
+          if (url.includes('youtube.com') || url.includes('youtu.be')) {
+            let videoId = '';
+            if (url.includes('youtu.be/')) videoId = url.split('youtu.be/')[1].split('?')[0];
+            else if (url.includes('v=')) videoId = url.split('v=')[1].split('&')[0];
+            embedHtml = `<iframe style="width: 100%; aspect-ratio: 16/9; border: 0; border-radius: 8px;" src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+          } else if (url.includes('vimeo.com')) {
+            const vimeoId = url.split('vimeo.com/')[1].split('?')[0];
+            embedHtml = `<iframe style="width: 100%; aspect-ratio: 16/9; border: 0; border-radius: 8px;" src="https://player.vimeo.com/video/${vimeoId}?autoplay=1" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+          } else if (url.endsWith('.mp4')) {
+            embedHtml = `<video style="width: 100%; aspect-ratio: 16/9; border-radius: 8px;" controls autoplay src="${url}"></video>`;
+          }
+          playerBody.innerHTML = `
+            ${embedHtml}
+            <h4 style="color: #ffffff; font-size: 18px; font-weight: 700; margin-top: 16px;" id="videoPlayerName">${title}</h4>
+          `;
+        } else {
+          playerBody.innerHTML = `
+            <div class="play-giant-btn" style="margin-bottom: 20px;">
+              <svg viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
+            </div>
+            <h4 style="color: #ffffff; font-size: 18px; font-weight: 700;" id="videoPlayerName">${title}</h4>
+            <p style="font-size: 13px; color: #9CA3AF; margin-top: 6px; max-width: 480px;">
+              Demonstração de corte em alta precisão TPS Technology.
+            </p>
+          `;
+        }
+      }
       document.getElementById('videoModal').classList.add('open');
     }
     function closeVideoModal(e) {
       if (e.target.id === 'videoModal') {
         document.getElementById('videoModal').classList.remove('open');
+        const playerBody = document.querySelector('.modal-player-body');
+        if (playerBody) playerBody.innerHTML = '';
       }
     }
     function closeVideoModalDirect() {
       document.getElementById('videoModal').classList.remove('open');
+      const playerBody = document.querySelector('.modal-player-body');
+      if (playerBody) playerBody.innerHTML = '';
     }
 
     const translations = {
