@@ -2288,16 +2288,20 @@
     <div class="modal-box" onclick="event.stopPropagation()">
       <div class="modal-head">
         <strong id="videoModalTitle">TPS Machine Demonstration</strong>
-        <button onclick="closeVideoModalDirect()" style="color: #9CA3AF; font-size: 26px; line-height: 1;">&times;</button>
+        <button onclick="closeVideoModalDirect()" style="color: #9CA3AF; font-size: 26px; line-height: 1; background: transparent; border: 0; cursor: pointer;">&times;</button>
       </div>
-      <div class="modal-player-body">
-        <div class="play-giant-btn" style="margin-bottom: 20px;">
-          <svg viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
+      <div class="modal-player-body" id="videoModalPlayerBody" style="padding: 0; background: #000; overflow: hidden; position: relative;">
+        <!-- Injected via openVideoModal -->
+      </div>
+      <div style="padding: 14px 22px; background: var(--tps-surface); display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--tps-border); flex-wrap: wrap; gap: 10px;">
+        <div>
+          <h4 style="color: #ffffff; font-size: 15px; font-weight: 700; margin: 0;" id="videoPlayerName">TPS Demonstration</h4>
+          <span style="font-size: 12px; color: #9CA3AF;">Hangzhou TPS Technology Co., Ltd. • Demonstração Oficial de Corte</span>
         </div>
-        <h4 style="color: #ffffff; font-size: 18px; font-weight: 700;" id="videoPlayerName">TPS-2516 Digital Cutter</h4>
-        <p style="font-size: 13px; color: #9CA3AF; margin-top: 6px; max-width: 480px;">
-          4K Video stream placeholder. Integrate your direct YouTube (iframe), Vimeo, or self-hosted MP4 machine run video here.
-        </p>
+        <div style="display: flex; gap: 8px;">
+          <a href="#contact" onclick="closeVideoModalDirect();" class="btn btn-glow btn-sm" style="padding: 7px 16px; font-size: 12px;">Solicitar Cotação</a>
+          <button onclick="closeVideoModalDirect()" class="btn btn-glass btn-sm" style="padding: 7px 14px; font-size: 12px;">Fechar</button>
+        </div>
       </div>
     </div>
   </div>
@@ -2631,112 +2635,76 @@
     }
 
     function resolveSlotVideo(slotOrTitle) {
-      try {
-        const data = typeof getTpsData === 'function' ? getTpsData() : null;
-        if (!data || !data.videoSlots) return { title: slotOrTitle, url: '' };
-
-        // 1. Direct slot ID
-        const direct = data.videoSlots.find(s => s.id === slotOrTitle);
-        if (direct && direct.url) return { title: direct.label || slotOrTitle, url: direct.url };
-
-        // 2. Keyword matching for static buttons across page
-        const q = (slotOrTitle || '').toLowerCase();
-        if (q.includes('hero') || q.includes('speed run') || q.includes('production demo')) {
-          const s = data.videoSlots.find(x => x.id === 'hero');
-          if (s && s.url) return { title: s.label || slotOrTitle, url: s.url };
-        }
-        if (q.includes('2516')) {
-          const s = data.videoSlots.find(x => x.id === 'machine_tps2516');
-          if (s && s.url) return { title: s.label || slotOrTitle, url: s.url };
-        }
-        if (q.includes('b130') || q.includes('bender')) {
-          const s = data.videoSlots.find(x => x.id === 'machine_tpsb130');
-          if (s && s.url) return { title: s.label || slotOrTitle, url: s.url };
-        }
-        if (q.includes('af3220') || q.includes('conveyor')) {
-          const s = data.videoSlots.find(x => x.id === 'machine_tpsaf3220');
-          if (s && s.url) return { title: s.label || slotOrTitle, url: s.url };
-        }
-        if (q.includes('tool') || q.includes('oscillating') || q.includes('cabeçote')) {
-          const s = data.videoSlots.find(x => x.id === 'tool_modular');
-          if (s && s.url) return { title: s.label || slotOrTitle, url: s.url };
-        }
-        if (q.includes('acrylic') || q.includes('router') || q.includes('card 1')) {
-          const s = data.videoSlots.find(x => x.id === 'gallery_1');
-          if (s && s.url) return { title: s.label || slotOrTitle, url: s.url };
-        }
-        if (q.includes('corrugated') || q.includes('packaging') || q.includes('card 2')) {
-          const s = data.videoSlots.find(x => x.id === 'gallery_2');
-          if (s && s.url) return { title: s.label || slotOrTitle, url: s.url };
-        }
-        if (q.includes('flanging') || q.includes('letter') || q.includes('card 3')) {
-          const s = data.videoSlots.find(x => x.id === 'gallery_3');
-          if (s && s.url) return { title: s.label || slotOrTitle, url: s.url };
-        }
-      } catch (err) {
-        console.warn("Slot resolver error:", err);
+      if (typeof resolveTpsSlotVideo === 'function') {
+        return resolveTpsSlotVideo(slotOrTitle);
       }
-      return { title: slotOrTitle, url: '' };
+      return { title: slotOrTitle || 'Demonstração TPS', url: 'https://www.youtube.com/watch?v=GMqbIyp5d2I', fallbackId: 'GMqbIyp5d2I' };
     }
 
     function openVideoModal(slotOrTitle, url) {
       let finalTitle = slotOrTitle || 'TPS Machine Demonstration';
-      let finalUrl = url || '';
+      let finalUrl = (url || '').trim();
+      let fallbackId = 'GMqbIyp5d2I';
 
       if (!finalUrl) {
         const resolved = resolveSlotVideo(slotOrTitle);
-        finalUrl = resolved.url;
+        finalUrl = (resolved.url || '').trim();
         if (resolved.title) finalTitle = resolved.title;
+        if (resolved.fallbackId) fallbackId = resolved.fallbackId;
       }
 
       const modalTitle = document.getElementById('videoModalTitle');
       if (modalTitle) modalTitle.textContent = finalTitle;
-      const playerBody = document.querySelector('.modal-player-body');
-      
+      const playerName = document.getElementById('videoPlayerName');
+      if (playerName) playerName.textContent = finalTitle;
+
+      const playerBody = document.getElementById('videoModalPlayerBody') || document.querySelector('.modal-player-body');
       if (playerBody) {
-        if (finalUrl && (finalUrl.includes('youtube.com') || finalUrl.includes('youtu.be') || finalUrl.includes('vimeo.com') || finalUrl.endsWith('.mp4'))) {
-          let embedHtml = '';
-          if (finalUrl.includes('youtube.com') || finalUrl.includes('youtu.be')) {
-            let videoId = '';
-            if (finalUrl.includes('youtu.be/')) videoId = finalUrl.split('youtu.be/')[1].split('?')[0];
-            else if (finalUrl.includes('v=')) videoId = finalUrl.split('v=')[1].split('&')[0];
-            embedHtml = `<iframe style="width: 100%; aspect-ratio: 16/9; border: 0; border-radius: 8px;" src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-          } else if (finalUrl.includes('vimeo.com')) {
-            const vimeoId = finalUrl.split('vimeo.com/')[1].split('?')[0];
-            embedHtml = `<iframe style="width: 100%; aspect-ratio: 16/9; border: 0; border-radius: 8px;" src="https://player.vimeo.com/video/${vimeoId}?autoplay=1" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
-          } else if (finalUrl.endsWith('.mp4')) {
-            embedHtml = `<video style="width: 100%; aspect-ratio: 16/9; border-radius: 8px;" controls autoplay src="${finalUrl}"></video>`;
-          }
-          playerBody.innerHTML = `
-            ${embedHtml}
-            <h4 style="color: #ffffff; font-size: 18px; font-weight: 700; margin-top: 16px;" id="videoPlayerName">${finalTitle}</h4>
-          `;
+        const parsed = (typeof parseVideoSource === 'function')
+          ? parseVideoSource(finalUrl, fallbackId)
+          : { type: 'youtube', embedUrl: `https://www.youtube.com/embed/${fallbackId}?autoplay=1&rel=0` };
+
+        if (typeof generatePlayerHtml === 'function') {
+          playerBody.innerHTML = generatePlayerHtml(parsed);
         } else {
           playerBody.innerHTML = `
-            <div class="play-giant-btn" style="margin-bottom: 20px;">
-              <svg viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
+            <div style="position: relative; width: 100%; aspect-ratio: 16/9; background: #000; overflow: hidden; border-radius: 8px;">
+              <iframe 
+                src="${parsed.embedUrl}" 
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen>
+              </iframe>
             </div>
-            <h4 style="color: #ffffff; font-size: 18px; font-weight: 700;" id="videoPlayerName">${finalTitle}</h4>
-            <p style="font-size: 13px; color: #9CA3AF; margin-top: 6px; max-width: 480px;">
-              Demonstração de corte em alta precisão TPS Technology.
-            </p>
           `;
         }
       }
-      document.getElementById('videoModal').classList.add('open');
-    }
-    function closeVideoModal(e) {
-      if (e.target.id === 'videoModal') {
-        document.getElementById('videoModal').classList.remove('open');
-        const playerBody = document.querySelector('.modal-player-body');
-        if (playerBody) playerBody.innerHTML = '';
+
+      const modal = document.getElementById('videoModal');
+      if (modal) {
+        modal.classList.add('open');
       }
     }
+
+    function closeVideoModal(e) {
+      if (!e || e.target.id === 'videoModal') {
+        closeVideoModalDirect();
+      }
+    }
+
     function closeVideoModalDirect() {
-      document.getElementById('videoModal').classList.remove('open');
-      const playerBody = document.querySelector('.modal-player-body');
+      const modal = document.getElementById('videoModal');
+      if (modal) modal.classList.remove('open');
+      const playerBody = document.getElementById('videoModalPlayerBody') || document.querySelector('.modal-player-body');
       if (playerBody) playerBody.innerHTML = '';
     }
+
+    window.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeVideoModalDirect();
+      }
+    });
 
     const translations = {
       en: {

@@ -2490,44 +2490,41 @@
       const data = getTpsData();
       const slot = (data.videoSlots || []).find(s => s.id === slotId);
 
+      if (!url && slot && slot.url) {
+        url = slot.url.trim();
+      }
+
       const title = slot ? slot.label : 'Vídeo TPS';
-      openAdminVideoPreview(title, url);
+      openAdminVideoPreview(title, url, slotId);
     }
 
-    function openAdminVideoPreview(title, url) {
+    function openAdminVideoPreview(title, url, slotId) {
       const modal = document.getElementById('adminVideoPreviewModal');
       const titleEl = document.getElementById('adminVideoPreviewTitle');
       const playerEl = document.getElementById('adminVideoPreviewPlayer');
       const urlEl = document.getElementById('adminVideoPreviewUrl');
 
+      let fallbackId = 'GMqbIyp5d2I';
+      if (slotId) {
+        if (slotId.includes('b130') || slotId.includes('gallery_3')) fallbackId = 'ICYHOPTF7Ac';
+        else if (slotId.includes('af3220')) fallbackId = 'RQa0hvsg10s';
+        else if (slotId.includes('tool')) fallbackId = '668QHcUPkt4';
+        else if (slotId.includes('gallery_1')) fallbackId = 'hEXpDpmNIVk';
+        else if (slotId.includes('gallery_2')) fallbackId = 'qtu6dGmeJA4';
+      }
+
+      const parsed = (typeof parseVideoSource === 'function')
+        ? parseVideoSource(url, fallbackId)
+        : { type: 'youtube', embedUrl: `https://www.youtube.com/embed/${fallbackId}?autoplay=1&rel=0` };
+
       if (titleEl) titleEl.textContent = title || 'Pré-visualização do Vídeo';
-      if (urlEl) urlEl.textContent = url ? `Link: ${url}` : 'Nenhum link configurado — exibindo demonstração padrão';
+      if (urlEl) urlEl.textContent = url ? `Link ativo: ${url}` : `Link padrão TPS em reprodução (${parsed.type.toUpperCase()})`;
 
       if (playerEl) {
-        if (url && (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com') || url.endsWith('.mp4'))) {
-          let embed = '';
-          if (url.includes('youtube.com') || url.includes('youtu.be')) {
-            let vid = '';
-            if (url.includes('youtu.be/')) vid = url.split('youtu.be/')[1].split('?')[0];
-            else if (url.includes('v=')) vid = url.split('v=')[1].split('&')[0];
-            embed = `<iframe style="width: 100%; height: 100%; border: 0;" src="https://www.youtube.com/embed/${vid}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-          } else if (url.includes('vimeo.com')) {
-            const vid = url.split('vimeo.com/')[1].split('?')[0];
-            embed = `<iframe style="width: 100%; height: 100%; border: 0;" src="https://player.vimeo.com/video/${vid}?autoplay=1" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
-          } else if (url.endsWith('.mp4')) {
-            embed = `<video style="width: 100%; height: 100%;" controls autoplay src="${url}"></video>`;
-          }
-          playerEl.innerHTML = embed;
+        if (parsed.type === 'video') {
+          playerEl.innerHTML = `<video style="width: 100%; height: 100%; object-fit: contain;" controls autoplay src="${parsed.embedUrl}"></video>`;
         } else {
-          playerEl.innerHTML = `
-            <div style="text-align: center; padding: 20px; color: #9CA3AF;">
-              <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--tps-red); margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 16px var(--tps-red-glow);">
-                <svg width="22" height="22" fill="#fff" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
-              </div>
-              <p style="color: #fff; font-size: 14px; font-weight: 600; margin: 0;">Player de Demonstração Padrão</p>
-              <p style="font-size: 12px; margin-top: 4px;">Cole um link do YouTube, Vimeo ou MP4 para reproduzir um vídeo real.</p>
-            </div>
-          `;
+          playerEl.innerHTML = `<iframe style="width: 100%; height: 100%; border: 0;" src="${parsed.embedUrl}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
         }
       }
 

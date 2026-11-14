@@ -55,6 +55,7 @@ const DEFAULT_TPS_DATA = {
         { label: "Registration", value: "High-Res CCD Camera" }
       ],
       videoTitle: "TPS-2516 Demonstration",
+      videoUrl: "https://www.youtube.com/watch?v=GMqbIyp5d2I",
       imageUrl: "",
       active: true,
       order: 1
@@ -75,6 +76,7 @@ const DEFAULT_TPS_DATA = {
         { label: "Control", value: "Closed-Loop Servo Drive" }
       ],
       videoTitle: "TPS-B130 Letter Bender Demonstration",
+      videoUrl: "https://www.youtube.com/watch?v=ICYHOPTF7Ac",
       imageUrl: "",
       active: true,
       order: 2
@@ -95,6 +97,7 @@ const DEFAULT_TPS_DATA = {
         { label: "Vacuum Bed", value: "High-Torque Synchronized" }
       ],
       videoTitle: "TPS-AF3220 Continuous Conveyor Demo",
+      videoUrl: "https://www.youtube.com/watch?v=RQa0hvsg10s",
       imageUrl: "",
       active: true,
       order: 3
@@ -173,14 +176,14 @@ const DEFAULT_TPS_DATA = {
     }
   ],
   videoSlots: [
-    { id: "hero", label: "Topo / Hero (Botão 'Watch 4K Speed Run')", url: "", defaultTitle: "TPS-2516 Flatbed Cutter — 4K Speed Run" },
-    { id: "machine_tps2516", label: "Máquina: TPS-2516 Flatbed Cutter", url: "", defaultTitle: "TPS-2516 Demonstration & Test Cut" },
-    { id: "machine_tpsb130", label: "Máquina: TPS-B130 Letter Bender", url: "", defaultTitle: "TPS-B130 Letter Bender in Action" },
-    { id: "machine_tpsaf3220", label: "Máquina: TPS-AF3220 Conveyor System", url: "", defaultTitle: "TPS-AF3220 Continuous Conveyor Demo" },
-    { id: "tool_modular", label: "Cabeçotes Modulares (Tools Showcase)", url: "", defaultTitle: "Electric Oscillating Tool in Action" },
-    { id: "gallery_1", label: "Galeria de Vídeos — Card 1 (Acrílico / Router)", url: "", defaultTitle: "20mm Cast Acrylic Edge Milling" },
-    { id: "gallery_2", label: "Galeria de Vídeos — Card 2 (Embalagens / Cartão)", url: "", defaultTitle: "Corrugated Box Creasing & Cutting" },
-    { id: "gallery_3", label: "Galeria de Vídeos — Card 3 (Letras Corpóreas 3D)", url: "", defaultTitle: "Automated Channel Letter Bending" }
+    { id: "hero", label: "Topo / Hero (Botão 'Watch 4K Speed Run')", url: "https://www.youtube.com/watch?v=GMqbIyp5d2I", defaultTitle: "TPS-2516 Flatbed Cutter — 4K Speed Run" },
+    { id: "machine_tps2516", label: "Máquina: TPS-2516 Flatbed Cutter", url: "https://www.youtube.com/watch?v=GMqbIyp5d2I", defaultTitle: "TPS-2516 Demonstration & Test Cut" },
+    { id: "machine_tpsb130", label: "Máquina: TPS-B130 Letter Bender", url: "https://www.youtube.com/watch?v=ICYHOPTF7Ac", defaultTitle: "TPS-B130 Letter Bender in Action" },
+    { id: "machine_tpsaf3220", label: "Máquina: TPS-AF3220 Conveyor System", url: "https://www.youtube.com/watch?v=RQa0hvsg10s", defaultTitle: "TPS-AF3220 Continuous Conveyor Demo" },
+    { id: "tool_modular", label: "Cabeçotes Modulares (Tools Showcase)", url: "https://www.youtube.com/watch?v=668QHcUPkt4", defaultTitle: "Electric Oscillating Tool in Action" },
+    { id: "gallery_1", label: "Galeria de Vídeos — Card 1 (Acrílico / Router)", url: "https://www.youtube.com/watch?v=hEXpDpmNIVk", defaultTitle: "20mm Cast Acrylic Edge Milling" },
+    { id: "gallery_2", label: "Galeria de Vídeos — Card 2 (Embalagens / Cartão)", url: "https://www.youtube.com/watch?v=qtu6dGmeJA4", defaultTitle: "Corrugated Box Creasing & Cutting" },
+    { id: "gallery_3", label: "Galeria de Vídeos — Card 3 (Letras Corpóreas 3D)", url: "https://www.youtube.com/watch?v=ICYHOPTF7Ac", defaultTitle: "Automated Channel Letter Bending" }
   ],
   videos: [
     {
@@ -188,7 +191,7 @@ const DEFAULT_TPS_DATA = {
       title: "Speed Demonstration: 20mm Acrylic Router Cutting",
       subtitle: "High-RPM router spindle with polished crystal edges",
       duration: "01:45",
-      videoUrl: "",
+      videoUrl: "https://www.youtube.com/watch?v=hEXpDpmNIVk",
       featured: true
     },
     {
@@ -196,7 +199,7 @@ const DEFAULT_TPS_DATA = {
       title: "High-Speed Corrugated Packaging Die-Less Cutting",
       subtitle: "EOT + Creasing Wheel prototyping in under 45 seconds",
       duration: "02:20",
-      videoUrl: "",
+      videoUrl: "https://www.youtube.com/watch?v=qtu6dGmeJA4",
       featured: true
     },
     {
@@ -204,7 +207,7 @@ const DEFAULT_TPS_DATA = {
       title: "TPS-B130 Channel Letter Flanging & 3D Bending",
       subtitle: "Precision stainless steel letter bending with zero weld gap",
       duration: "03:10",
-      videoUrl: "",
+      videoUrl: "https://www.youtube.com/watch?v=ICYHOPTF7Ac",
       featured: true
     }
   ],
@@ -266,9 +269,29 @@ function getTpsData() {
     const data = Object.assign({}, DEFAULT_TPS_DATA, parsed);
     if (!data.videoSlots || !Array.isArray(data.videoSlots) || data.videoSlots.length === 0) {
       data.videoSlots = JSON.parse(JSON.stringify(DEFAULT_TPS_DATA.videoSlots));
+    } else {
+      // Auto-populate default video URLs if empty in saved storage
+      DEFAULT_TPS_DATA.videoSlots.forEach(defSlot => {
+        const existing = data.videoSlots.find(s => s.id === defSlot.id);
+        if (existing) {
+          if (!existing.url || !existing.url.trim()) {
+            existing.url = defSlot.url;
+          }
+        } else {
+          data.videoSlots.push(JSON.parse(JSON.stringify(defSlot)));
+        }
+      });
     }
     if (!data.categories || !Array.isArray(data.categories) || data.categories.length === 0) {
       data.categories = JSON.parse(JSON.stringify(DEFAULT_TPS_DATA.categories));
+    }
+    if (data.machines && Array.isArray(data.machines)) {
+      data.machines.forEach(m => {
+        if (!m.videoUrl) {
+          const defM = DEFAULT_TPS_DATA.machines.find(x => x.id === m.id || x.model === m.model);
+          if (defM && defM.videoUrl) m.videoUrl = defM.videoUrl;
+        }
+      });
     }
     return data;
   } catch (e) {
@@ -546,4 +569,166 @@ function importTpsJson(fileContent) {
   } catch (err) {
     return { success: false, error: err.message };
   }
+}
+
+// Universal Video Parsing & Embedding Engine
+function parseVideoSource(input, fallbackId = 'GMqbIyp5d2I') {
+  if (!input || typeof input !== 'string') {
+    return {
+      type: 'youtube',
+      id: fallbackId,
+      embedUrl: 'https://www.youtube.com/embed/' + fallbackId + '?autoplay=1&rel=0'
+    };
+  }
+
+  let str = input.trim();
+
+  // If user pasted an entire <iframe> code snippet, extract src
+  const iframeMatch = str.match(/src=["'](https?:\/\/[^"'>]+)["']/i);
+  if (iframeMatch) {
+    str = iframeMatch[1];
+  }
+
+  // 1. YouTube formats: watch?v=, youtu.be/, shorts/, embed/, v/
+  const ytMatch = str.match(/(?:youtube\.com\/(?:watch\?.*?v=|embed\/|shorts\/|v\/)|youtu\.be\/)([\w-]{11})/i);
+  if (ytMatch) {
+    const id = ytMatch[1];
+    return {
+      type: 'youtube',
+      id: id,
+      embedUrl: 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0'
+    };
+  }
+
+  // If user entered only the raw 11-character YouTube video ID
+  if (/^[\w-]{11}$/.test(str)) {
+    return {
+      type: 'youtube',
+      id: str,
+      embedUrl: 'https://www.youtube.com/embed/' + str + '?autoplay=1&rel=0'
+    };
+  }
+
+  // 2. Vimeo formats
+  const vimeoMatch = str.match(/(?:vimeo\.com\/(?:video\/)?|player\.vimeo\.com\/video\/)(\d+)/i);
+  if (vimeoMatch) {
+    const vid = vimeoMatch[1];
+    return {
+      type: 'vimeo',
+      id: vid,
+      embedUrl: 'https://player.vimeo.com/video/' + vid + '?autoplay=1'
+    };
+  }
+
+  // 3. Direct HTML5 video file (.mp4, .webm, .ogg, .mov)
+  if (/\.(mp4|webm|ogg|mov)($|\?)/i.test(str)) {
+    return {
+      type: 'video',
+      id: str,
+      embedUrl: str
+    };
+  }
+
+  // Fallback to official TPS demo if URL is invalid
+  return {
+    type: 'youtube',
+    id: fallbackId,
+    embedUrl: 'https://www.youtube.com/embed/' + fallbackId + '?autoplay=1&rel=0'
+  };
+}
+
+function generatePlayerHtml(videoObj) {
+  if (!videoObj) return '';
+  if (videoObj.type === 'youtube' || videoObj.type === 'vimeo') {
+    return `
+      <div style="position: relative; width: 100%; aspect-ratio: 16/9; background: #000; overflow: hidden; border-radius: 8px;">
+        <iframe 
+          src="${videoObj.embedUrl}" 
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen>
+        </iframe>
+      </div>
+    `;
+  } else if (videoObj.type === 'video') {
+    return `
+      <div style="position: relative; width: 100%; aspect-ratio: 16/9; background: #000; overflow: hidden; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+        <video 
+          src="${videoObj.embedUrl}" 
+          style="width: 100%; height: 100%; object-fit: contain;" 
+          controls 
+          autoplay 
+          playsinline>
+        </video>
+      </div>
+    `;
+  }
+  return '';
+}
+
+function resolveTpsSlotVideo(slotOrTitle) {
+  try {
+    const data = typeof getTpsData === 'function' ? getTpsData() : null;
+    if (!data) return { title: slotOrTitle || 'Demonstração TPS', url: 'https://www.youtube.com/watch?v=GMqbIyp5d2I', fallbackId: 'GMqbIyp5d2I' };
+
+    // 1. Direct slot ID
+    if (data.videoSlots && Array.isArray(data.videoSlots)) {
+      const direct = data.videoSlots.find(s => s.id === slotOrTitle);
+      if (direct && direct.url && direct.url.trim()) {
+        return { title: direct.label || direct.defaultTitle || slotOrTitle, url: direct.url.trim(), fallbackId: 'GMqbIyp5d2I' };
+      }
+    }
+
+    // 2. Direct machine match
+    if (data.machines && Array.isArray(data.machines)) {
+      const q = (slotOrTitle || '').toLowerCase();
+      const mach = data.machines.find(m => {
+        const mod = (m.model || '').toLowerCase();
+        const tit = (m.title || '').toLowerCase();
+        return (mod && q.includes(mod)) || (tit && q.includes(tit));
+      });
+      if (mach && mach.videoUrl && mach.videoUrl.trim()) {
+        return { title: mach.videoTitle || mach.model || slotOrTitle, url: mach.videoUrl.trim(), fallbackId: 'GMqbIyp5d2I' };
+      }
+    }
+
+    // 3. Keyword matching across known components
+    const q = (slotOrTitle || '').toLowerCase();
+    if (q.includes('hero') || q.includes('speed run') || q.includes('production demo')) {
+      const s = (data.videoSlots || []).find(x => x.id === 'hero');
+      return { title: s?.label || 'TPS-2516 Flatbed Cutter — 4K Speed Run', url: s?.url || 'https://www.youtube.com/watch?v=GMqbIyp5d2I', fallbackId: 'GMqbIyp5d2I' };
+    }
+    if (q.includes('2516')) {
+      const s = (data.videoSlots || []).find(x => x.id === 'machine_tps2516');
+      return { title: s?.label || 'TPS-2516 Flatbed Cutter', url: s?.url || 'https://www.youtube.com/watch?v=GMqbIyp5d2I', fallbackId: 'GMqbIyp5d2I' };
+    }
+    if (q.includes('b130') || q.includes('bender')) {
+      const s = (data.videoSlots || []).find(x => x.id === 'machine_tpsb130');
+      return { title: s?.label || 'TPS-B130 CNC Channel Letter Bender', url: s?.url || 'https://www.youtube.com/watch?v=ICYHOPTF7Ac', fallbackId: 'ICYHOPTF7Ac' };
+    }
+    if (q.includes('af3220') || q.includes('conveyor')) {
+      const s = (data.videoSlots || []).find(x => x.id === 'machine_tpsaf3220');
+      return { title: s?.label || 'TPS-AF3220 Automated Conveyor Finishing Line', url: s?.url || 'https://www.youtube.com/watch?v=RQa0hvsg10s', fallbackId: 'RQa0hvsg10s' };
+    }
+    if (q.includes('tool') || q.includes('oscillating') || q.includes('cabeçote') || q.includes('faca') || q.includes('eot') || q.includes('router') || q.includes('spindle')) {
+      const s = (data.videoSlots || []).find(x => x.id === 'tool_modular');
+      return { title: s?.label || 'TPS Modular Cutting Tools in Action', url: s?.url || 'https://www.youtube.com/watch?v=668QHcUPkt4', fallbackId: '668QHcUPkt4' };
+    }
+    if (q.includes('acrylic') || q.includes('acrílico') || q.includes('card 1') || q.includes('gallery_1')) {
+      const s = (data.videoSlots || []).find(x => x.id === 'gallery_1');
+      return { title: s?.label || '20mm Cast Acrylic Edge Milling', url: s?.url || 'https://www.youtube.com/watch?v=hEXpDpmNIVk', fallbackId: 'hEXpDpmNIVk' };
+    }
+    if (q.includes('corrugated') || q.includes('packaging') || q.includes('embalagen') || q.includes('cartão') || q.includes('card 2') || q.includes('gallery_2')) {
+      const s = (data.videoSlots || []).find(x => x.id === 'gallery_2');
+      return { title: s?.label || 'Corrugated Box Creasing & Cutting', url: s?.url || 'https://www.youtube.com/watch?v=qtu6dGmeJA4', fallbackId: 'qtu6dGmeJA4' };
+    }
+    if (q.includes('flanging') || q.includes('letter') || q.includes('corpóre') || q.includes('card 3') || q.includes('gallery_3')) {
+      const s = (data.videoSlots || []).find(x => x.id === 'gallery_3');
+      return { title: s?.label || 'Automated Channel Letter Bending', url: s?.url || 'https://www.youtube.com/watch?v=ICYHOPTF7Ac', fallbackId: 'ICYHOPTF7Ac' };
+    }
+  } catch (err) {
+    console.warn("resolveTpsSlotVideo error:", err);
+  }
+  return { title: slotOrTitle || 'Demonstração TPS', url: 'https://www.youtube.com/watch?v=GMqbIyp5d2I', fallbackId: 'GMqbIyp5d2I' };
 }
