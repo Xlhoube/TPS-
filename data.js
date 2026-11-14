@@ -32,6 +32,12 @@ const DEFAULT_TPS_DATA = {
     username: "admin",
     password: "admin123" // Default password
   },
+  categories: [
+    { id: "cutter", name: "Mesa de Corte Digital (Cutter)", en: "Digital Cutters" },
+    { id: "bender", name: "Dobradora de Letras-Caixa (Bender)", en: "Channel Letter Benders" },
+    { id: "conveyor", name: "Esteira Contínua (Conveyor)", en: "Conveyor & Feeding" },
+    { id: "other", name: "Outros Sistemas CNC", en: "Other CNC Systems" }
+  ],
   machines: [
     {
       id: "m-2516",
@@ -261,6 +267,9 @@ function getTpsData() {
     if (!data.videoSlots || !Array.isArray(data.videoSlots) || data.videoSlots.length === 0) {
       data.videoSlots = JSON.parse(JSON.stringify(DEFAULT_TPS_DATA.videoSlots));
     }
+    if (!data.categories || !Array.isArray(data.categories) || data.categories.length === 0) {
+      data.categories = JSON.parse(JSON.stringify(DEFAULT_TPS_DATA.categories));
+    }
     return data;
   } catch (e) {
     console.error("Error reading TPS Data from localStorage", e);
@@ -348,6 +357,40 @@ function saveMachine(machine) {
 function deleteMachine(id) {
   const data = getTpsData();
   data.machines = data.machines.filter(m => m.id !== id);
+  saveTpsData(data);
+}
+
+// Categories Operations
+function addCategory(name, enName) {
+  const data = getTpsData();
+  if (!data.categories) data.categories = JSON.parse(JSON.stringify(DEFAULT_TPS_DATA.categories));
+  const cleanName = (name || '').trim();
+  if (!cleanName) return null;
+
+  // Generate safe slug ID
+  let id = cleanName.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_|_$/g, '');
+  if (!id) id = 'cat_' + Date.now();
+
+  const existing = data.categories.find(c => c.id === id || c.name.toLowerCase() === cleanName.toLowerCase());
+  if (existing) return existing;
+
+  const newCat = {
+    id: id,
+    name: cleanName,
+    en: enName || cleanName
+  };
+  data.categories.push(newCat);
+  saveTpsData(data);
+  return newCat;
+}
+
+function deleteCategory(catId) {
+  const data = getTpsData();
+  data.categories = (data.categories || []).filter(c => c.id !== catId);
   saveTpsData(data);
 }
 

@@ -1099,13 +1099,13 @@
         <!-- TAB 2: MACHINES -->
         <div class="tab-view" id="tab-machines">
           <div class="controls-bar">
-            <div class="filter-group">
-              <button class="chip-btn active" onclick="filterMachinesTable('all', this)">Todas as Máquinas</button>
-              <button class="chip-btn" onclick="filterMachinesTable('cutter', this)">Mesas de Corte Digital</button>
-              <button class="chip-btn" onclick="filterMachinesTable('bender', this)">Dobradoras de Letras</button>
-              <button class="chip-btn" onclick="filterMachinesTable('conveyor', this)">Esteiras & Alimentação</button>
+            <div class="filter-group" id="machinesCategoryFilterGroup">
+              <!-- Populated dynamically via JS -->
             </div>
-            <div style="display: flex; gap: 12px; align-items: center;">
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+              <button class="btn-secondary" onclick="handlePromptNewCategory()" style="padding: 9px 14px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                <span>+</span> Nova Categoria
+              </button>
               <button class="btn-primary" onclick="openMachineModal()">
                 + Nova Máquina
               </button>
@@ -1418,13 +1418,23 @@
               <input type="text" id="machModel" required placeholder="Ex: TPS-2516" />
             </div>
             <div class="form-group">
-              <label>Categoria *</label>
-              <select id="machCategory" required>
-                <option value="cutter">Mesa de Corte Digital (Cutter)</option>
-                <option value="bender">Dobradora de Letras-Caixa (Bender)</option>
-                <option value="conveyor">Esteira Contínua (Conveyor)</option>
-                <option value="other">Outros Sistemas CNC</option>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label style="margin: 0;">Categoria *</label>
+                <button type="button" onclick="showInlineNewCategoryBox()" style="background: transparent; border: none; color: var(--tps-red); font-size: 11.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                  <span>+</span> Nova Categoria
+                </button>
+              </div>
+              <select id="machCategory" required onchange="handleCategorySelectChange(this)">
+                <!-- Preenchido dinamicamente via JS -->
               </select>
+              <div id="newCategoryInlineBox" style="display: none; margin-top: 8px; background: rgba(225, 25, 56, 0.08); border: 1px solid rgba(225, 25, 56, 0.3); border-radius: 8px; padding: 10px;">
+                <label style="font-size: 11.5px; color: #fff; font-weight: 600; display: block; margin-bottom: 4px;">Nome da Nova Categoria:</label>
+                <div style="display: flex; gap: 8px;">
+                  <input type="text" id="newCategoryInput" placeholder="Ex: Centros de Fresagem CNC ou Corte a Laser" style="flex: 1; padding: 7px 10px; font-size: 12.5px; background: #0B0F17; border: 1px solid #374151; color: #fff; border-radius: 6px;" />
+                  <button type="button" class="btn-primary" onclick="confirmSaveNewCategory()" style="padding: 0 14px; font-size: 12px; height: 34px;">Adicionar</button>
+                  <button type="button" class="btn-secondary" onclick="cancelNewCategory()" style="padding: 0 10px; font-size: 12px; height: 34px;">Cancelar</button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1755,6 +1765,7 @@
       document.getElementById('adminUsernameDisplay').textContent = data.admin.username;
 
       renderDashboardRecentLeads(data.leads);
+      renderCategorySelectorsAndFilters(data.categories);
       renderMachinesCards(data.machines);
       renderToolsCards(data.tools);
       renderVideoSlotsUI(slots);
@@ -1862,8 +1873,101 @@
     function filterMachinesTable(cat, btn) {
       currentCategoryFilter = cat;
       document.querySelectorAll('#tab-machines .chip-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      if (btn) btn.classList.add('active');
       renderMachinesCards(getTpsData().machines);
+    }
+
+    // Render Categories & Filter Chips
+    function renderCategorySelectorsAndFilters(categories) {
+      const data = getTpsData();
+      const cats = (categories && categories.length > 0) ? categories : (data.categories || DEFAULT_TPS_DATA.categories || []);
+
+      // 1. Filter Chips in tab-machines
+      const filterGroup = document.getElementById('machinesCategoryFilterGroup');
+      if (filterGroup) {
+        let chipsHtml = `<button class="chip-btn ${currentCategoryFilter === 'all' ? 'active' : ''}" onclick="filterMachinesTable('all', this)">Todas as Máquinas</button>`;
+        cats.forEach(c => {
+          chipsHtml += `<button class="chip-btn ${currentCategoryFilter === c.id ? 'active' : ''}" onclick="filterMachinesTable('${escapeHtml(c.id)}', this)">${escapeHtml(c.name)}</button>`;
+        });
+        filterGroup.innerHTML = chipsHtml;
+      }
+
+      // 2. Select dropdown in machineModal
+      const machCategorySelect = document.getElementById('machCategory');
+      if (machCategorySelect) {
+        const currentSelected = machCategorySelect.value;
+        let opts = '';
+        cats.forEach(c => {
+          opts += `<option value="${escapeHtml(c.id)}">${escapeHtml(c.name)}</option>`;
+        });
+        opts += `<option value="__create_new__" style="color: var(--tps-red); font-weight: 700;">+ Criar Nova Categoria...</option>`;
+        machCategorySelect.innerHTML = opts;
+        if (currentSelected && cats.some(c => c.id === currentSelected)) {
+          machCategorySelect.value = currentSelected;
+        }
+      }
+    }
+
+    function handleCategorySelectChange(selectEl) {
+      if (selectEl.value === '__create_new__') {
+        showInlineNewCategoryBox();
+      } else {
+        cancelNewCategory();
+      }
+    }
+
+    function showInlineNewCategoryBox() {
+      const box = document.getElementById('newCategoryInlineBox');
+      const input = document.getElementById('newCategoryInput');
+      if (box) box.style.display = 'block';
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+    }
+
+    function cancelNewCategory() {
+      const box = document.getElementById('newCategoryInlineBox');
+      if (box) box.style.display = 'none';
+      const machCategorySelect = document.getElementById('machCategory');
+      if (machCategorySelect && machCategorySelect.value === '__create_new__') {
+        const data = getTpsData();
+        const cats = data.categories || DEFAULT_TPS_DATA.categories || [];
+        if (cats.length > 0) machCategorySelect.value = cats[0].id;
+      }
+    }
+
+    function confirmSaveNewCategory() {
+      const input = document.getElementById('newCategoryInput');
+      const val = (input?.value || '').trim();
+      if (!val) {
+        showToast("Por favor, digite o nome da nova categoria.", "error");
+        return;
+      }
+      const newCat = addCategory(val);
+      if (newCat) {
+        renderCategorySelectorsAndFilters();
+        const machCategorySelect = document.getElementById('machCategory');
+        if (machCategorySelect) machCategorySelect.value = newCat.id;
+        cancelNewCategory();
+        showToast(`Categoria "${newCat.name}" criada com sucesso!`, "success");
+        renderAllViews();
+      }
+    }
+
+    function handlePromptNewCategory() {
+      const modal = document.getElementById('machineModal');
+      if (modal && modal.classList.contains('open')) {
+        showInlineNewCategoryBox();
+        return;
+      }
+      const catName = prompt("Digite o nome da nova categoria de equipamentos (ex: Centros de Fresagem CNC, Corte a Laser, etc.):");
+      if (!catName || !catName.trim()) return;
+      const newCat = addCategory(catName.trim());
+      if (newCat) {
+        showToast(`Categoria "${newCat.name}" criada com sucesso!`, "success");
+        renderAllViews();
+      }
     }
 
     // Render Tools Cards
@@ -2131,12 +2235,18 @@
 
     // Modal Operations: Machine
     function openMachineModal() {
+      cancelNewCategory();
+      renderCategorySelectorsAndFilters();
       document.getElementById('machId').value = '';
       document.getElementById('machModel').value = '';
       document.getElementById('machTitle').value = '';
       document.getElementById('machSub').value = '';
       document.getElementById('machBadge').value = 'NOVO';
-      document.getElementById('machCategory').value = 'cutter';
+      
+      const data = getTpsData();
+      const firstCatId = (data.categories && data.categories.length > 0) ? data.categories[0].id : 'cutter';
+      document.getElementById('machCategory').value = firstCatId;
+
       document.getElementById('machDesc').value = '';
       document.getElementById('machVideoTitle').value = '';
       document.getElementById('machImageUrl').value = '';
@@ -2151,6 +2261,8 @@
     }
 
     function editMachine(id) {
+      cancelNewCategory();
+      renderCategorySelectorsAndFilters();
       const m = getTpsData().machines.find(x => x.id === id);
       if (!m) return;
       document.getElementById('machId').value = m.id;
@@ -2158,7 +2270,19 @@
       document.getElementById('machTitle').value = m.title;
       document.getElementById('machSub').value = m.sub || '';
       document.getElementById('machBadge').value = m.badge || '';
-      document.getElementById('machCategory').value = m.category || 'cutter';
+      
+      const select = document.getElementById('machCategory');
+      if (select) {
+        if (![...select.options].some(o => o.value === m.category)) {
+          // If category isn't in select, add it
+          const opt = document.createElement('option');
+          opt.value = m.category;
+          opt.textContent = m.category;
+          select.insertBefore(opt, select.lastElementChild);
+        }
+        select.value = m.category || 'cutter';
+      }
+
       document.getElementById('machDesc').value = m.desc || '';
       document.getElementById('machVideoTitle').value = m.videoTitle || '';
       document.getElementById('machImageUrl').value = m.imageUrl || '';

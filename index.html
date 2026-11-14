@@ -1630,7 +1630,7 @@
           <span class="eyebrow-red" data-i18n="eq_eyebrow">Engineering Excellence</span>
           <h2 class="section-headline" data-i18n="eq_headline">High-Performance Machinery</h2>
         </div>
-        <div class="filter-tabs">
+        <div class="filter-tabs" id="mainEqFilterTabs">
           <button onclick="filterEquipment('all', this)" class="filter-btn active">All Systems</button>
           <button onclick="filterEquipment('cutter', this)" class="filter-btn">Digital Cutters</button>
           <button onclick="filterEquipment('bender', this)" class="filter-btn">Channel Letter Benders</button>
@@ -2463,7 +2463,17 @@
         }
       }
 
-      // 2. Update Machinery Grid
+      // 2. Update Machinery Category Filter Tabs & Grid
+      const eqFilterTabs = document.getElementById('mainEqFilterTabs');
+      if (eqFilterTabs && data.categories && data.categories.length > 0) {
+        eqFilterTabs.innerHTML = `
+          <button onclick="filterEquipment('all', this)" class="filter-btn active">All Systems</button>
+          ${data.categories.map(c => `
+            <button onclick="filterEquipment('${escapeHtml(c.id)}', this)" class="filter-btn">${escapeHtml(c.en || c.name)}</button>
+          `).join('')}
+        `;
+      }
+
       const eqGrid = document.getElementById('mainEqGrid');
       if (eqGrid && data.machines && data.machines.length > 0) {
         eqGrid.innerHTML = data.machines.map(m => {
