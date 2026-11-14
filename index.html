@@ -585,6 +585,19 @@
       background-image: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
                         linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
     }
+    .eq-machine-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      z-index: 2;
+      padding: 16px;
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .eq-card:hover .eq-machine-img {
+      transform: scale(1.05);
+    }
     .eq-model-big {
       position: relative;
       z-index: 2;
@@ -2415,6 +2428,15 @@
       }, 4500);
     }
 
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     function renderDynamicCatalog() {
       if (typeof getTpsData !== 'function') return;
       const data = getTpsData();
@@ -2438,55 +2460,58 @@
       // 2. Update Machinery Grid
       const eqGrid = document.getElementById('mainEqGrid');
       if (eqGrid && data.machines && data.machines.length > 0) {
-        eqGrid.innerHTML = data.machines.map(m => `
-          <div class="eq-card" data-category="${m.category}">
-            <div class="eq-img-box">
-              <span class="eq-badge">${m.badge || 'CNC Industrial'}</span>
-              <div class="eq-blueprint-grid"></div>
-              <div class="eq-svg-preview">
-                <svg viewBox="0 0 100 100" class="eq-svg-icon">
-                  <rect x="15" y="25" width="70" height="50" rx="3" fill="#14181F" stroke="#E11938" stroke-width="1.8" stroke-dasharray="4 2"/>
-                  <line x1="15" y1="50" x2="85" y2="50" stroke="#262C36" stroke-width="1.5"/>
-                  <line x1="50" y1="25" x2="50" y2="75" stroke="#E11938" stroke-width="2"/>
-                  <circle cx="50" cy="50" r="7" fill="#E11938" fill-opacity="0.3" stroke="#E11938" stroke-width="1.5"/>
-                  <circle cx="50" cy="50" r="2.5" fill="#ffffff"/>
-                  <rect x="25" y="77" width="8" height="12" fill="#262C36"/>
-                  <rect x="67" y="77" width="8" height="12" fill="#262C36"/>
-                </svg>
-              </div>
-            </div>
-            <div class="eq-body">
-              <h3 class="eq-title">${m.name}</h3>
-              <p class="eq-sub">${m.sub}</p>
-              <div class="eq-specs-row">
-                <div class="eq-spec-col">
-                  <div class="spec-label">Working Area</div>
-                  <div class="spec-value">${m.area}</div>
-                </div>
-                <div class="eq-spec-col">
-                  <div class="spec-label">Max Speed</div>
-                  <div class="spec-value">${m.speed}</div>
-                </div>
-                <div class="eq-spec-col">
-                  <div class="spec-label">Spindle / Power</div>
-                  <div class="spec-value">${m.power}</div>
-                </div>
-              </div>
-              <p class="eq-desc">${m.desc}</p>
-              <div class="eq-features">
-                ${(m.features || []).map(f => `<span class="eq-feat-item">✓ ${f}</span>`).join('')}
-              </div>
-              <div class="eq-actions">
-                <button class="btn btn-outline" style="padding: 10px 16px; font-size: 13px;" onclick="openVideoModal('${(m.videoModalTitle || m.name).replace(/'/g, "\\'")}')">
-                  Watch Run Video
+        eqGrid.innerHTML = data.machines.map(m => {
+          const model = m.model || m.name || 'TPS Machine';
+          const title = m.title || 'Digital Cutting System';
+          const sub = m.sub || '';
+          const desc = m.desc || '';
+          const badge = m.badge || 'FLAGSHIP MODEL';
+          const badgeClass = m.badgeClass || (badge.includes('MASTER') ? 'eq-ribbon dark' : 'eq-ribbon');
+          const hasImage = !!(m.imageUrl && m.imageUrl.trim());
+          const specs = m.specs || [
+            { label: "Working Area", value: m.area || sub },
+            { label: "Max Speed", value: m.speed || "Up to 1500 mm/s" },
+            { label: "Repeatability", value: "±0.05 mm" },
+            { label: "Registration", value: "High-Res CCD Camera" }
+          ];
+
+          return `
+            <div class="eq-card" data-category="${m.category || 'cutter'}">
+              <div class="eq-preview">
+                <div class="eq-preview-bg"></div>
+                <span class="${badgeClass}">${escapeHtml(badge)}</span>
+                ${hasImage ? `
+                  <img src="${escapeHtml(m.imageUrl)}" alt="${escapeHtml(model)}" class="eq-machine-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                  <div class="eq-model-big" style="display: none;">
+                    <strong>${escapeHtml(model)}</strong>
+                    <span>${escapeHtml(sub)}</span>
+                  </div>
+                ` : `
+                  <div class="eq-model-big">
+                    <strong>${escapeHtml(model)}</strong>
+                    <span>${escapeHtml(sub)}</span>
+                  </div>
+                `}
+                <button onclick="openVideoModal('${escapeHtml(model)}')" class="eq-video-btn">
+                  ▶ Video Demo
                 </button>
-                <a href="#contact" class="btn btn-glow" style="padding: 10px 16px; font-size: 13px; text-decoration: none;" onclick="prefillInquiryEquipment('${m.name.replace(/'/g, "\\'")}')">
-                  Request Quote
-                </a>
+              </div>
+              <div class="eq-content">
+                <h3>${escapeHtml(title)}</h3>
+                <p>${escapeHtml(desc)}</p>
+                <div class="specs-table">
+                  ${specs.map(s => `
+                    <div class="spec-row"><span>${escapeHtml(s.label)}</span><strong>${escapeHtml(s.value)}</strong></div>
+                  `).join('')}
+                </div>
+                <div class="eq-card-actions">
+                  <button onclick="openVideoModal('${escapeHtml(model)}')" class="btn btn-glass btn-sm">Watch Video</button>
+                  <a href="#contact" class="btn btn-glow btn-sm" onclick="prefillInquiryEquipment('${escapeHtml(model)}')">Request Quote</a>
+                </div>
               </div>
             </div>
-          </div>
-        `).join('');
+          `;
+        }).join('');
 
         // Also update equipment select dropdown in contact form
         const inqSelect = document.getElementById('inqEquipment');
@@ -2494,7 +2519,8 @@
           const currentVal = inqSelect.value;
           let opts = '<option value="">Select Equipment of Interest</option>';
           data.machines.forEach(m => {
-            opts += `<option value="${m.name}">${m.name} - ${m.sub}</option>`;
+            const mName = m.model || m.name;
+            opts += `<option value="${escapeHtml(mName)}">${escapeHtml(mName)} - ${escapeHtml(m.sub || '')}</option>`;
           });
           opts += '<option value="Custom Size / OEM">Custom Size Machine / OEM Integration</option>';
           opts += '<option value="Modular Tools / Parts">Modular Cutting Tools & Replacement Blades</option>';

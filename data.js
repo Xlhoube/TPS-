@@ -49,6 +49,7 @@ const DEFAULT_TPS_DATA = {
         { label: "Registration", value: "High-Res CCD Camera" }
       ],
       videoTitle: "TPS-2516 Demonstration",
+      imageUrl: "",
       active: true,
       order: 1
     },
@@ -68,6 +69,7 @@ const DEFAULT_TPS_DATA = {
         { label: "Control", value: "Closed-Loop Servo Drive" }
       ],
       videoTitle: "TPS-B130 Letter Bender Demonstration",
+      imageUrl: "",
       active: true,
       order: 2
     },
@@ -87,6 +89,7 @@ const DEFAULT_TPS_DATA = {
         { label: "Vacuum Bed", value: "High-Torque Synchronized" }
       ],
       videoTitle: "TPS-AF3220 Continuous Conveyor Demo",
+      imageUrl: "",
       active: true,
       order: 3
     }

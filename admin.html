@@ -1445,6 +1445,14 @@
           </div>
 
           <div class="form-group">
+            <label>Foto / Imagem do Equipamento (URL ou caminho local)</label>
+            <input type="text" id="machImageUrl" placeholder="Ex: assets/tps-2516.png ou https://..." oninput="updateMachImagePreview(this.value)" />
+            <div id="machImagePreviewBox" style="margin-top: 8px; display: none; height: 130px; border-radius: 8px; border: 1px solid var(--tps-border); background: #000; overflow: hidden; align-items: center; justify-content: center;">
+              <img id="machImagePreviewImg" src="" alt="Prévia" style="max-height: 100%; max-width: 100%; object-fit: contain;" />
+            </div>
+          </div>
+
+          <div class="form-group">
             <label>Descrição do Equipamento *</label>
             <textarea rows="3" id="machDesc" required placeholder="Descreva os materiais suportados, capacidade produtiva e vantagens..."></textarea>
           </div>
@@ -1808,6 +1816,11 @@
         `).join('');
 
         card.innerHTML = `
+          ${m.imageUrl ? `
+            <div style="height: 140px; background: #0B0E14; border-bottom: 1px solid var(--tps-border); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 10px;">
+              <img src="${escapeHtml(m.imageUrl)}" alt="${escapeHtml(m.model)}" style="max-height: 100%; max-width: 100%; object-fit: contain;" onerror="this.parentElement.style.display='none'" />
+            </div>
+          ` : ''}
           <div class="item-card-header">
             <div>
               <h3>${escapeHtml(m.model)}</h3>
@@ -2094,6 +2107,22 @@
       showToast("Planilha CSV baixada com sucesso!", "success");
     }
 
+    function updateMachImagePreview(url) {
+      const box = document.getElementById('machImagePreviewBox');
+      const img = document.getElementById('machImagePreviewImg');
+      if (!box || !img) return;
+      const cleanUrl = (url || '').trim();
+      if (cleanUrl) {
+        img.src = cleanUrl;
+        box.style.display = 'flex';
+        img.onerror = () => { box.style.display = 'none'; };
+        img.onload = () => { box.style.display = 'flex'; };
+      } else {
+        box.style.display = 'none';
+        img.src = '';
+      }
+    }
+
     // Modal Operations: Machine
     function openMachineModal() {
       document.getElementById('machId').value = '';
@@ -2104,6 +2133,8 @@
       document.getElementById('machCategory').value = 'cutter';
       document.getElementById('machDesc').value = '';
       document.getElementById('machVideoTitle').value = '';
+      document.getElementById('machImageUrl').value = '';
+      updateMachImagePreview('');
       document.getElementById('machSpec1').value = 'Up to 1500 mm/s';
       document.getElementById('machSpec2').value = '0.1 – 50 mm';
       document.getElementById('machSpec3').value = '±0.05 mm';
@@ -2124,6 +2155,8 @@
       document.getElementById('machCategory').value = m.category || 'cutter';
       document.getElementById('machDesc').value = m.desc || '';
       document.getElementById('machVideoTitle').value = m.videoTitle || '';
+      document.getElementById('machImageUrl').value = m.imageUrl || '';
+      updateMachImagePreview(m.imageUrl || '');
 
       const specs = m.specs || [];
       document.getElementById('machSpec1').value = specs[0]?.value || '';
@@ -2149,6 +2182,7 @@
       const category = document.getElementById('machCategory').value;
       const desc = document.getElementById('machDesc').value.trim();
       const videoTitle = document.getElementById('machVideoTitle').value.trim() || `${model} Video Demo`;
+      const imageUrl = document.getElementById('machImageUrl').value.trim();
 
       const specs = [
         { label: "Cutting Speed", value: document.getElementById('machSpec1').value.trim() || 'High Speed' },
@@ -2168,6 +2202,7 @@
         desc,
         specs,
         videoTitle,
+        imageUrl,
         active: true
       });
 
