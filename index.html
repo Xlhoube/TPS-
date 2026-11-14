@@ -1105,6 +1105,207 @@
       .brand-sub { display: none; }
       .contact-container { padding: 26px; }
     }
+
+    /* PARTNER TICKER & MARQUEE */
+    .partner-ticker-wrap {
+      background: linear-gradient(180deg, #101215 0%, #0A0B0D 100%);
+      border-top: 1px solid var(--tps-border);
+      border-bottom: 1px solid var(--tps-border);
+      padding: 22px 0 26px;
+      overflow: hidden;
+      position: relative;
+    }
+    .partner-ticker-title {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      color: var(--tps-text-muted);
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .partner-ticker-marquee {
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+      position: relative;
+      mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+      -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    }
+    .partner-ticker-track {
+      display: flex;
+      gap: 52px;
+      align-items: center;
+      width: max-content;
+      animation: partnerScroll 40s linear infinite;
+    }
+    .partner-ticker-track:hover {
+      animation-play-state: paused;
+    }
+    @keyframes partnerScroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    .ticker-partner-item {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 44px;
+      padding: 0 12px;
+      opacity: 0.72;
+      transition: all 0.25s ease;
+      flex-shrink: 0;
+    }
+    .ticker-partner-item:hover {
+      opacity: 1;
+      transform: translateY(-2px);
+    }
+    .ticker-partner-item img {
+      height: 32px;
+      width: auto;
+      max-width: 150px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 5px rgba(0,0,0,0.45));
+    }
+
+    /* PARTNERS SECTION */
+    .partners-section {
+      background: var(--tps-surface);
+      border-top: 1px solid var(--tps-border);
+      position: relative;
+    }
+    .partners-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 22px;
+      margin-top: 36px;
+    }
+    .partner-card {
+      background: var(--tps-surface-elevated);
+      border: 1px solid var(--tps-border);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+    .partner-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--tps-border-hover);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(225, 25, 56, 0.18);
+    }
+    .partner-logo-box {
+      height: 84px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+    .partner-card:hover .partner-logo-box {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(225, 25, 56, 0.35);
+      box-shadow: 0 4px 20px rgba(225, 25, 56, 0.12);
+    }
+    .partner-logo-box img {
+      max-height: 48px;
+      max-width: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+      transition: transform 0.3s ease;
+    }
+    .partner-card:hover .partner-logo-box img {
+      transform: scale(1.05);
+    }
+    .partner-card-body {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .partner-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .partner-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: -0.01em;
+    }
+    .partner-badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: #D1D5DB;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 3px 8px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .badge-flag {
+      font-size: 12px;
+      line-height: 1;
+    }
+    .partner-desc {
+      font-size: 13px;
+      color: var(--tps-text-muted);
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+    .partner-card-foot {
+      padding-top: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .partner-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #FFA5B4;
+      transition: all 0.2s ease;
+    }
+    .partner-link-btn:hover {
+      color: #FFFFFF;
+      transform: translateX(3px);
+    }
+    .partner-link-btn svg {
+      transition: transform 0.2s ease;
+    }
+    .partner-link-btn:hover svg {
+      transform: translate(2px, -2px);
+    }
+
+    @media (max-width: 1200px) {
+      .partners-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 860px) {
+      .partners-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 540px) {
+      .partners-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -1135,6 +1336,7 @@
         <a href="#tools" data-i18n="nav_tools">Tools & Heads</a>
         <a href="#applications" data-i18n="nav_apps">Applications</a>
         <a href="#videos" data-i18n="nav_videos">Video Demos</a>
+        <a href="#partners" data-i18n="nav_partners">Partners</a>
         <a href="#contact" data-i18n="nav_contact">Contact & Quote</a>
       </nav>
 
@@ -1261,6 +1463,44 @@
       </div>
     </div>
   </section>
+
+  <!-- Global Partner Marquee Ticker -->
+  <div class="partner-ticker-wrap">
+    <div class="partner-ticker-title">
+      <span class="badge-live"></span>
+      <span data-i18n="ticker_title">TRUSTED BY GLOBAL INDUSTRY LEADERS & DISTRIBUTORS</span>
+    </div>
+    <div class="partner-ticker-marquee">
+      <div class="partner-ticker-track">
+        <!-- Set 1 -->
+        <a href="https://allsfar.com" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Allsfar (United Kingdom)"><img src="assets/partners/allsfar.svg" alt="Allsfar"></a>
+        <a href="https://www.nipponcolor.com" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Nippon Color (India)"><img src="assets/partners/nipponcolor.png" alt="Nippon Color"></a>
+        <a href="https://www.hunterkorea.com" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Hunter Korea (South Korea)"><img src="assets/partners/hunterkorea_white.svg" alt="Hunter Korea"></a>
+        <a href="https://saviemercan.com.br" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Savie Mercan (Brazil)"><img src="assets/partners/saviemercan_white.png" alt="Savie Mercan"></a>
+        <a href="https://supacolor.com" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Supacolor (USA)"><img src="assets/partners/supacolor_white.png" alt="Supacolor"></a>
+        <a href="https://www.aremedia.it" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Aremedia (Italy)"><img src="assets/partners/aremedia_white.png" alt="Aremedia"></a>
+        <a href="https://www.tauler.net" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Tauler (Spain)"><img src="assets/partners/tauler.svg" alt="Tauler"></a>
+        <a href="https://frasch.com" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Frasch (USA)"><img src="assets/partners/frasch_white.png" alt="Frasch"></a>
+        <a href="https://best-matic.be" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Best-Matic (Belgium)"><img src="assets/partners/bestmatic.png" alt="Best-Matic"></a>
+        <a href="https://insertnord.com" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Insertnord (Sweden)"><img src="assets/partners/insertnord_white.png" alt="Insertnord"></a>
+        <a href="https://www.grafitintas.com" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Grafitintas (Colombia)"><img src="assets/partners/grafitintas_opt.png" alt="Grafitintas"></a>
+        <a href="https://www.clamapor.pt" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Clamapor (Portugal)"><img src="assets/partners/clamapor_white.png" alt="Clamapor"></a>
+        <!-- Set 2 (for continuous seamless scroll) -->
+        <a href="https://allsfar.com" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Allsfar (United Kingdom)"><img src="assets/partners/allsfar.svg" alt="Allsfar"></a>
+        <a href="https://www.nipponcolor.com" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Nippon Color (India)"><img src="assets/partners/nipponcolor.png" alt="Nippon Color"></a>
+        <a href="https://www.hunterkorea.com" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Hunter Korea (South Korea)"><img src="assets/partners/hunterkorea_white.svg" alt="Hunter Korea"></a>
+        <a href="https://saviemercan.com.br" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Savie Mercan (Brazil)"><img src="assets/partners/saviemercan_white.png" alt="Savie Mercan"></a>
+        <a href="https://supacolor.com" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Supacolor (USA)"><img src="assets/partners/supacolor_white.png" alt="Supacolor"></a>
+        <a href="https://www.aremedia.it" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Aremedia (Italy)"><img src="assets/partners/aremedia_white.png" alt="Aremedia"></a>
+        <a href="https://www.tauler.net" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Tauler (Spain)"><img src="assets/partners/tauler.svg" alt="Tauler"></a>
+        <a href="https://frasch.com" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Frasch (USA)"><img src="assets/partners/frasch_white.png" alt="Frasch"></a>
+        <a href="https://best-matic.be" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Best-Matic (Belgium)"><img src="assets/partners/bestmatic.png" alt="Best-Matic"></a>
+        <a href="https://insertnord.com" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Insertnord (Sweden)"><img src="assets/partners/insertnord_white.png" alt="Insertnord"></a>
+        <a href="https://www.grafitintas.com" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Grafitintas (Colombia)"><img src="assets/partners/grafitintas_opt.png" alt="Grafitintas"></a>
+        <a href="https://www.clamapor.pt" target="_blank" rel="noopener noreferrer" class="ticker-partner-item" title="Clamapor (Portugal)"><img src="assets/partners/clamapor_white.png" alt="Clamapor"></a>
+      </div>
+    </div>
+  </div>
 
   <!-- Machinery Lineup Section -->
   <section id="equipment" class="section-py">
@@ -1549,6 +1789,270 @@
     </div>
   </section>
 
+
+  <!-- Global Partners & Distribution Network Section -->
+  <section id="partners" class="section-py partners-section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow-red" data-i18n="partners_eyebrow">Worldwide Network</span>
+          <h2 class="section-headline" data-i18n="partners_headline">Global Partners & Distributors</h2>
+          <p style="color: var(--tps-text-muted); font-size: 15px; max-width: 680px; margin-top: 10px;" data-i18n="partners_desc">
+            Proudly collaborating with world-class manufacturers, sign converters, acoustic fabricators, and certified distribution partners across 60+ countries.
+          </p>
+        </div>
+        <div class="filter-tabs">
+          <button onclick="filterPartners('all', this)" class="filter-btn partner-filter-btn active" data-i18n="partners_filter_all">All Partners (12)</button>
+          <button onclick="filterPartners('europe', this)" class="filter-btn partner-filter-btn" data-i18n="partners_filter_europe">Europe</button>
+          <button onclick="filterPartners('americas', this)" class="filter-btn partner-filter-btn" data-i18n="partners_filter_americas">Americas</button>
+          <button onclick="filterPartners('asia', this)" class="filter-btn partner-filter-btn" data-i18n="partners_filter_asia">Asia & Global</button>
+        </div>
+      </div>
+
+      <div class="partners-grid">
+        <!-- 1. Allsfar -->
+        <div class="partner-card" data-region="europe">
+          <div class="partner-logo-box">
+            <img src="assets/partners/allsfar.svg" alt="Allsfar Logo" loading="lazy">
+          </div>
+          <div class="partner-card-body">
+            <div class="partner-card-head">
+              <h3 class="partner-name">Allsfar</h3>
+              <span class="partner-badge"><span class="badge-flag">🇬🇧</span> UK</span>
+            </div>
+            <p class="partner-desc">Architectural acoustic felt wall panels and bespoke interior design products crafted with precision cutting.</p>
+          </div>
+          <div class="partner-card-foot">
+            <a href="https://allsfar.com" target="_blank" rel="noopener noreferrer" class="partner-link-btn">
+              <span data-i18n="partners_visit_btn">Visit Website</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- 2. Nippon Color -->
+        <div class="partner-card" data-region="asia">
+          <div class="partner-logo-box">
+            <img src="assets/partners/nipponcolor.png" alt="Nippon Color Logo" loading="lazy">
+          </div>
+          <div class="partner-card-body">
+            <div class="partner-card-head">
+              <h3 class="partner-name">Nippon Color</h3>
+              <span class="partner-badge"><span class="badge-flag">🇮🇳</span> India</span>
+            </div>
+            <p class="partner-desc">India's leading prepress and graphic machinery distributor, providing automated digital flatbed cutting solutions.</p>
+          </div>
+          <div class="partner-card-foot">
+            <a href="https://www.nipponcolor.com" target="_blank" rel="noopener noreferrer" class="partner-link-btn">
+              <span data-i18n="partners_visit_btn">Visit Website</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- 3. Hunter Korea -->
+        <div class="partner-card" data-region="asia">
+          <div class="partner-logo-box">
+            <img src="assets/partners/hunterkorea_white.svg" alt="Hunter Korea Logo" loading="lazy">
+          </div>
+          <div class="partner-card-body">
+            <div class="partner-card-head">
+              <h3 class="partner-name">Hunter Korea</h3>
+              <span class="partner-badge"><span class="badge-flag">🇰🇷</span> South Korea</span>
+            </div>
+            <p class="partner-desc">Premier Korean leader in sign-making equipment, automatic channel letter benders, and digital cutting machinery.</p>
+          </div>
+          <div class="partner-card-foot">
+            <a href="https://www.hunterkorea.com" target="_blank" rel="noopener noreferrer" class="partner-link-btn">
+              <span data-i18n="partners_visit_btn">Visit Website</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- 4. Savie Mercan -->
+        <div class="partner-card" data-region="americas">
+          <div class="partner-logo-box">
+            <img src="assets/partners/saviemercan_white.png" alt="Savie Mercan Logo" loading="lazy">
+          </div>
+          <div class="partner-card-body">
+            <div class="partner-card-head">
+              <h3 class="partner-name">Savie Mercan</h3>
+              <span class="partner-badge"><span class="badge-flag">🇧🇷</span> Brazil</span>
+            </div>
+            <p class="partner-desc">Brazilian industrial machinery provider specializing in cutting tables, CNC systems, and technical manufacturing equipment.</p>
+          </div>
+          <div class="partner-card-foot">
+            <a href="https://saviemercan.com.br" target="_blank" rel="noopener noreferrer" class="partner-link-btn">
+              <span data-i18n="partners_visit_btn">Visit Website</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- 5. Supacolor -->
+        <div class="partner-card" data-region="americas">
+          <div class="partner-logo-box">
+            <img src="assets/partners/supacolor_white.png" alt="Supacolor Logo" loading="lazy">
+          </div>
+          <div class="partner-card-body">
+            <div class="partner-card-head">
+              <h3 class="partner-name">Supacolor</h3>
+              <span class="partner-badge"><span class="badge-flag">🇺🇸</span> USA / Global</span>
+            </div>
+            <p class="partner-desc">Global market leader in high-performance textile heat transfers, custom apparel decoration, and precision graphic finishing.</p>
+          </div>
+          <div class="partner-card-foot">
+            <a href="https://supacolor.com" target="_blank" rel="noopener noreferrer" class="partner-link-btn">
+              <span data-i18n="partners_visit_btn">Visit Website</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- 6. Aremedia -->
+        <div class="partner-card" data-region="europe">
+          <div class="partner-logo-box">
+            <img src="assets/partners/aremedia_white.png" alt="Aremedia Logo" loading="lazy">
+          </div>
+          <div class="partner-card-body">
+            <div class="partner-card-head">
+              <h3 class="partner-name">Aremedia</h3>
+              <span class="partner-badge"><span class="badge-flag">🇮🇹</span> Italy</span>
+            </div>
+            <p class="partner-desc">Italian distributor of digital printing media, wide-format printers, and industrial flatbed finishing equipment.</p>
+          </div>
+          <div class="partner-card-foot">
+            <a href="https://www.aremedia.it" target="_blank" rel="noopener noreferrer" class="partner-link-btn">
+              <span data-i18n="partners_visit_btn">Visit Website</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- 7. Tauler -->
+        <div class="partner-card" data-region="europe">
+          <div class="partner-logo-box">
+            <img src="assets/partners/tauler.svg" alt="Tauler Logo" loading="lazy">
+          </div>
+          <div class="partner-card-body">
+            <div class="partner-card-head">
+              <h3 class="partner-name">Tauler</h3>
+              <span class="partner-badge"><span class="badge-flag">🇪🇸</span> Spain</span>
+            </div>
+            <p class="partner-desc">Renowned European manufacturer of high-precision laminating machines and automated post-press finishing systems.</p>
+          </div>
+          <div class="partner-card-foot">
+            <a href="https://www.tauler.net" target="_blank" rel="noopener noreferrer" class="partner-link-btn">
+              <span data-i18n="partners_visit_btn">Visit Website</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- 8. Frasch -->
+        <div class="partner-card" data-region="americas">
+          <div class="partner-logo-box">
+            <img src="assets/partners/frasch_white.png" alt="Frasch Logo" loading="lazy">
+          </div>
+          <div class="partner-card-body">
+            <div class="partner-card-head">
+              <h3 class="partner-name">Frasch</h3>
+              <span class="partner-badge"><span class="badge-flag">🇺🇸</span> USA</span>
+            </div>
+            <p class="partner-desc">Innovative American manufacturer of sustainable acoustic ceiling baffles, wall tiles, and engineered PET felt panels.</p>
+          </div>
+          <div class="partner-card-foot">
+            <a href="https://frasch.com" target="_blank" rel="noopener noreferrer" class="partner-link-btn">
+              <span data-i18n="partners_visit_btn">Visit Website</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- 9. Best-Matic -->
+        <div class="partner-card" data-region="europe">
+          <div class="partner-logo-box">
+            <img src="assets/partners/bestmatic.png" alt="Best-Matic Logo" loading="lazy">
+          </div>
+          <div class="partner-card-body">
+            <div class="partner-card-head">
+              <h3 class="partner-name">Best-Matic</h3>
+              <span class="partner-badge"><span class="badge-flag">🇧🇪</span> Belgium</span>
+            </div>
+            <p class="partner-desc">Specialized provider of industrial packaging solutions, box folding, cutting equipment, and conversion automation in Benelux.</p>
+          </div>
+          <div class="partner-card-foot">
+            <a href="https://best-matic.be" target="_blank" rel="noopener noreferrer" class="partner-link-btn">
+              <span data-i18n="partners_visit_btn">Visit Website</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- 10. Insertnord -->
+        <div class="partner-card" data-region="europe">
+          <div class="partner-logo-box">
+            <img src="assets/partners/insertnord_white.png" alt="Insertnord Logo" loading="lazy">
+          </div>
+          <div class="partner-card-body">
+            <div class="partner-card-head">
+              <h3 class="partner-name">Insertnord</h3>
+              <span class="partner-badge"><span class="badge-flag">🇸🇪</span> Sweden</span>
+            </div>
+            <p class="partner-desc">Swedish leader in post-press graphics machinery, folding equipment, envelope inserting, and custom packaging systems.</p>
+          </div>
+          <div class="partner-card-foot">
+            <a href="https://insertnord.com" target="_blank" rel="noopener noreferrer" class="partner-link-btn">
+              <span data-i18n="partners_visit_btn">Visit Website</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- 11. Grafitintas -->
+        <div class="partner-card" data-region="americas">
+          <div class="partner-logo-box">
+            <img src="assets/partners/grafitintas_opt.png" alt="Grafitintas Logo" loading="lazy">
+          </div>
+          <div class="partner-card-body">
+            <div class="partner-card-head">
+              <h3 class="partner-name">Grafitintas</h3>
+              <span class="partner-badge"><span class="badge-flag">🇨🇴</span> Colombia</span>
+            </div>
+            <p class="partner-desc">Key Latin American supplier of graphic arts solutions, wide-format inks, digital cutting routers, and industrial consumables.</p>
+          </div>
+          <div class="partner-card-foot">
+            <a href="https://www.grafitintas.com" target="_blank" rel="noopener noreferrer" class="partner-link-btn">
+              <span data-i18n="partners_visit_btn">Visit Website</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- 12. Clamapor -->
+        <div class="partner-card" data-region="europe">
+          <div class="partner-logo-box">
+            <img src="assets/partners/clamapor_white.png" alt="Clamapor Logo" loading="lazy">
+          </div>
+          <div class="partner-card-body">
+            <div class="partner-card-head">
+              <h3 class="partner-name">Clamapor</h3>
+              <span class="partner-badge"><span class="badge-flag">🇵🇹</span> Portugal</span>
+            </div>
+            <p class="partner-desc">Reference Portuguese distributor of large-format digital printers, precision cutting plotters, and advertising materials.</p>
+          </div>
+          <div class="partner-card-foot">
+            <a href="https://www.clamapor.pt" target="_blank" rel="noopener noreferrer" class="partner-link-btn">
+              <span data-i18n="partners_visit_btn">Visit Website</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Contact & Quote -->
   <section id="contact" class="section-py">
     <div class="container">
@@ -1616,7 +2120,15 @@
             <span>Technology Co., Ltd.</span>
           </div>
         </div>
-        <div style="display: flex; gap: 28px; font-size: 13px;">
+        <div style="display: flex; gap: 24px; font-size: 13px; flex-wrap: wrap;">
+          <a href="#equipment" style="color: var(--tps-text-muted); transition: color 0.2s;">Equipment</a>
+          <a href="#tools" style="color: var(--tps-text-muted); transition: color 0.2s;">Tools & Heads</a>
+          <a href="#applications" style="color: var(--tps-text-muted); transition: color 0.2s;">Applications</a>
+          <a href="#videos" style="color: var(--tps-text-muted); transition: color 0.2s;">Videos</a>
+          <a href="#partners" style="color: #FFA5B4; font-weight: 700; transition: color 0.2s;">Global Partners</a>
+          <a href="#contact" style="color: var(--tps-text-muted); transition: color 0.2s;">Contact & Quote</a>
+        </div>
+        <div style="display: flex; gap: 28px; font-size: 13px; margin-top: 10px;">
           <span><strong>Email:</strong> info@tps-tech.com</span>
           <span><strong>Tel / WhatsApp:</strong> +86 13906740412</span>
           <span><strong>Location:</strong> Shaoxing, Zhejiang, China</span>
@@ -1729,6 +2241,14 @@
       document.getElementById('spec4').textContent = data.spec4;
     }
 
+    function filterPartners(region, btn) {
+      document.querySelectorAll('.partner-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.partner-card').forEach(card => {
+        card.style.display = (region === 'all' || card.dataset.region === region) ? 'flex' : 'none';
+      });
+    }
+
     function filterEquipment(cat, btn) {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
@@ -1767,7 +2287,17 @@
         video_eyebrow: "Proven in Production", video_headline: "See TPS Machines in Action",
         contact_eyebrow: "Direct From Manufacturer", contact_title: "Get Your Factory Quote & Free Sample Cut",
         contact_desc: "Send us your cutting requirements or material specifications. Our engineering team in Zhejiang will provide custom machine configuration and test cut videos.",
-        btn_submit_inquiry: "Submit Inquiry & Request Sample Cut"
+        btn_submit_inquiry: "Submit Inquiry & Request Sample Cut",
+        nav_partners: "Partners",
+        ticker_title: "TRUSTED BY GLOBAL INDUSTRY LEADERS & DISTRIBUTORS",
+        partners_eyebrow: "Worldwide Network",
+        partners_headline: "Global Partners & Distributors",
+        partners_desc: "Proudly collaborating with world-class manufacturers, sign converters, acoustic fabricators, and certified distribution partners across 60+ countries.",
+        partners_filter_all: "All Partners (12)",
+        partners_filter_europe: "Europe",
+        partners_filter_americas: "Americas",
+        partners_filter_asia: "Asia & Global",
+        partners_visit_btn: "Visit Website"
       },
       pt: {
         top_bar_msg: "Líder Global em Mesas de Corte Digital e Quinadoras de Letras-Caixa",
@@ -1784,7 +2314,17 @@
         video_eyebrow: "Provado em Produção", video_headline: "Veja as Máquinas TPS em Ação",
         contact_eyebrow: "Direto da Fábrica", contact_title: "Peça Cotação de Fábrica e Amostra de Corte Grátis",
         contact_desc: "Envie-nos os seus materiais ou requisitos de corte. A nossa equipa de engenharia em Zhejiang prepara a configuração ideal e vídeos de teste com os seus materiais.",
-        btn_submit_inquiry: "Enviar Pedido e Solicitar Teste de Corte"
+        btn_submit_inquiry: "Enviar Pedido e Solicitar Teste de Corte",
+        nav_partners: "Parceiros",
+        ticker_title: "CONFIADO POR LÍDERES INDUSTRIAIS E DISTRIBUIDORES GLOBAIS",
+        partners_eyebrow: "Rede Internacional",
+        partners_headline: "Parceiros e Distribuidores Globais",
+        partners_desc: "Colaboração direta com convertedores industriais de referência, especialistas em corte acústico, sinalética e distribuidores oficiais em mais de 60 países.",
+        partners_filter_all: "Todos os Parceiros (12)",
+        partners_filter_europe: "Europa",
+        partners_filter_americas: "Américas",
+        partners_filter_asia: "Ásia e Global",
+        partners_visit_btn: "Visitar Website"
       },
       es: {
         top_bar_msg: "Líder Mundial en Mesas de Corte Digital y Dobladoras de Letras Corpóreas",
@@ -1801,7 +2341,17 @@
         video_eyebrow: "Comprobado en Fábrica", video_headline: "Vea las Máquinas TPS en Acción",
         contact_eyebrow: "Directo de Fábrica", contact_title: "Solicite Presupuesto y Muestra de Corte Gratis",
         contact_desc: "Envíenos sus especificaciones de material. Nuestro equipo técnico en Zhejiang le proporcionará la configuración ideal y vídeos de corte de prueba.",
-        btn_submit_inquiry: "Enviar Solicitud y Pedir Muestra"
+        btn_submit_inquiry: "Enviar Solicitud y Pedir Muestra",
+        nav_partners: "Socios",
+        ticker_title: "CONFIADO POR LÍDERES INDUSTRIALES Y DISTRIBUIDORES GLOBALES",
+        partners_eyebrow: "Red Internacional",
+        partners_headline: "Socios y Distribuidores Globales",
+        partners_desc: "Orgullosos de colaborar con fabricantes, transformadores de rotulación, cortadores acústicos y distribuidores certificados en más de 60 países.",
+        partners_filter_all: "Todos los Socios (12)",
+        partners_filter_europe: "Europa",
+        partners_filter_americas: "América",
+        partners_filter_asia: "Asia y Global",
+        partners_visit_btn: "Visitar Sitio Web"
       },
       fr: {
         top_bar_msg: "Leader Mondial des Tables de Découpe Numérique et Cintreuses de Lettres Boîtiers",
@@ -1818,7 +2368,17 @@
         video_eyebrow: "Performance Prouvée", video_headline: "Les Machines TPS en Action",
         contact_eyebrow: "Directement du Fabricant", contact_title: "Obtenez Votre Devis d'Usine & Essai Gratuit",
         contact_desc: "Envoyez-nous vos contraintes de matériaux. Notre équipe d'ingénieurs à Zhejiang réalise vos essais de découpe en vidéo.",
-        btn_submit_inquiry: "Envoyer la Demande et Tester un Échantillon"
+        btn_submit_inquiry: "Envoyer la Demande et Tester un Échantillon",
+        nav_partners: "Partenaires",
+        ticker_title: "CHOISI PAR DES LEADERS INDUSTRIELS ET DISTRIBUTEURS MONDIAUX",
+        partners_eyebrow: "Réseau International",
+        partners_headline: "Partenaires & Distributeurs Mondiaux",
+        partners_desc: "Fiers de collaborer avec des fabricants de premier plan, transformateurs, spécialistes acoustiques et distributeurs agréés dans plus de 60 pays.",
+        partners_filter_all: "Tous les Partenaires (12)",
+        partners_filter_europe: "Europe",
+        partners_filter_americas: "Amériques",
+        partners_filter_asia: "Asie & International",
+        partners_visit_btn: "Visiter le Site Web"
       },
       de: {
         top_bar_msg: "Weltweit Führender Hersteller von Digitalen Flachbettplottern & Profilbiegemaschinen",
@@ -1835,7 +2395,17 @@
         video_eyebrow: "In der Praxis Bewährt", video_headline: "TPS-Systeme im Live-Einsatz",
         contact_eyebrow: "Direkt Vom Hersteller", contact_title: "Werksangebot & Kostenlose Musterschnitte",
         contact_desc: "Senden Sie uns Ihre Materialanforderungen. Unser Ingenieurteam in Zhejiang erstellt maßgeschneiderte Konfigurationen und Schnittberichte.",
-        btn_submit_inquiry: "Anfrage Senden & Schnitttest Anfordern"
+        btn_submit_inquiry: "Anfrage Senden & Schnitttest Anfordern",
+        nav_partners: "Partner",
+        ticker_title: "GESCHÄTZT VON WELTWEITEN INDUSTRIEFÜHRERN & VERTRIEBSPARTNERN",
+        partners_eyebrow: "Weltweites Netzwerk",
+        partners_headline: "Globale Partner & Vertriebshändler",
+        partners_desc: "Erfolgreiche Zusammenarbeit mit führenden Herstellern, Werbetechnikern, Akustikproduzenten und zertifizierten Händlern in über 60 Ländern.",
+        partners_filter_all: "Alle Partner (12)",
+        partners_filter_europe: "Europa",
+        partners_filter_americas: "Amerika",
+        partners_filter_asia: "Asien & Global",
+        partners_visit_btn: "Website Besuchen"
       },
       it: {
         top_bar_msg: "Leader Mondiale nei Plotter da Taglio Digitali e Piegatrici Automatiche per Lettere Scatolate",
@@ -1852,7 +2422,17 @@
         video_eyebrow: "Provato in Produzione", video_headline: "Guarda le Macchine TPS in Azione",
         contact_eyebrow: "Direttamente dal Produttore", contact_title: "Preventivo di Fabbrica e Taglio Campione Gratuito",
         contact_desc: "Inviaci le tue esigenze di taglio o le specifiche dei materiali. Il nostro team di ingegneri nello Zhejiang fornirà una configurazione su misura e video di prova.",
-        btn_submit_inquiry: "Invia Richiesta e Chiedi Prova di Taglio"
+        btn_submit_inquiry: "Invia Richiesta e Chiedi Prova di Taglio",
+        nav_partners: "Partner",
+        ticker_title: "SCELTO DA LEADER INDUSTRIALI E DISTRIBUTORI GLOBALI",
+        partners_eyebrow: "Rete Internazionale",
+        partners_headline: "Partner e Distributori Globali",
+        partners_desc: "Collaborazione fidata con produttori, trasformatori per insegne, esperti in taglio acustico e distributori ufficiali in oltre 60 paesi.",
+        partners_filter_all: "Tutti i Partner (12)",
+        partners_filter_europe: "Europa",
+        partners_filter_americas: "Americhe",
+        partners_filter_asia: "Asia e Globale",
+        partners_visit_btn: "Visita il Sito"
       },
       ru: {
         top_bar_msg: "Мировой лидер в производстве планшетных плоттеров и станков для гибки объемных букв",
@@ -1869,7 +2449,17 @@
         video_eyebrow: "Проверено на производстве", video_headline: "Станки TPS в действии",
         contact_eyebrow: "Напрямую от производителя", contact_title: "Заводское предложение и бесплатный тестовый рез",
         contact_desc: "Отправьте нам ваши требования к резке или характеристики материалов. Наши инженеры в Чжэцзяне подготовят индивидуальную конфигурацию и видео тестовой резки.",
-        btn_submit_inquiry: "Отправить запрос и заказать тестовый рез"
+        btn_submit_inquiry: "Отправить запрос и заказать тестовый рез",
+        nav_partners: "Партнеры",
+        ticker_title: "ДОВЕРИЕ ВЕДУЩИХ МИРОВЫХ ПРОИЗВОДИТЕЛЕЙ И ДИСТРИБЬЮТОРОВ",
+        partners_eyebrow: "Глобальная сеть",
+        partners_headline: "Глобальные партнеры и дистрибьюторы",
+        partners_desc: "Сотрудничество с передовыми производителями вывесок, упаковки, акустических решений и сертифицированными дистрибьюторами в более чем 60 странах.",
+        partners_filter_all: "Все партнеры (12)",
+        partners_filter_europe: "Европа",
+        partners_filter_americas: "Америка",
+        partners_filter_asia: "Азия и мир",
+        partners_visit_btn: "Перейти на сайт"
       },
       ja: {
         top_bar_msg: "デジタルフラットベッドカッター＆自動チャンネルレターベンダーの世界的リーダー",
@@ -1886,7 +2476,17 @@
         video_eyebrow: "生産現場での実績", video_headline: "TPSマシンの稼働シーン",
         contact_eyebrow: "メーカー直販", contact_title: "工場直販お見積り＆無料サンプルカット",
         contact_desc: "切断要件や素材の仕様をお送りください。浙江省の技術チームが最適なマシン構成とテストカット動画をご提案いたします。",
-        btn_submit_inquiry: "お問い合わせ・サンプルカットを依頼"
+        btn_submit_inquiry: "お問い合わせ・サンプルカットを依頼",
+        nav_partners: "パートナー",
+        ticker_title: "世界をリードする産業メーカー＆販売代理店からの信頼",
+        partners_eyebrow: "グローバルネットワーク",
+        partners_headline: "グローバルパートナー＆販売代理店",
+        partners_desc: "世界60カ国以上の有力サイン加工業者、音響パネルメーカー、産業用コンバーター、公式販売パートナーと強固に連携しています。",
+        partners_filter_all: "全パートナー (12)",
+        partners_filter_europe: "ヨーロッパ",
+        partners_filter_americas: "アメリカ大陸",
+        partners_filter_asia: "アジア・グローバル",
+        partners_visit_btn: "公式サイトへ"
       },
       ko: {
         top_bar_msg: "디지털 평판 커터 및 자동 채널 레터 벤더의 글로벌 리더",
@@ -1903,7 +2503,17 @@
         video_eyebrow: "생산 현장의 검증", video_headline: "TPS 장비 실제 가동 영상",
         contact_eyebrow: "제조사 직영", contact_title: "공장 직거래 견적 및 무료 샘플 커팅",
         contact_desc: "커팅 요구사항이나 소재 사양을 보내주세요. 저장성 엔지니어링 팀이 맞춤형 장비 구성과 테스트 커팅 영상을 제공해 드립니다.",
-        btn_submit_inquiry: "문의 접수 및 샘플 커팅 요청"
+        btn_submit_inquiry: "문의 접수 및 샘플 커팅 요청",
+        nav_partners: "파트너",
+        ticker_title: "글로벌 산업 리더 및 공식 대리점이 신뢰하는 파트너십",
+        partners_eyebrow: "글로벌 네트워크",
+        partners_headline: "글로벌 파트너 및 공식 대리점",
+        partners_desc: "전 세계 60여 개국의 일류 사인 가공사, 어쿠스틱 펠트 제조사, 산업용 가공 기업 및 공인 유통 파트너와 함께합니다.",
+        partners_filter_all: "전체 파트너 (12)",
+        partners_filter_europe: "유럽",
+        partners_filter_americas: "미주",
+        partners_filter_asia: "아시아 및 글로벌",
+        partners_visit_btn: "웹사이트 방문"
       },
       ar: {
         top_bar_msg: "الشركة الرائدة عالمياً في قواطع الطاولة الرقمية وآلات ثني الحروف البارزة الآلية",
@@ -1920,7 +2530,17 @@
         video_eyebrow: "مثبتة في الإنتاج", video_headline: "شاهد آلات TPS أثناء العمل",
         contact_eyebrow: "مباشرة من المصنع", contact_title: "احصل على عرض سعر المصنع وعينة قطع مجانية",
         contact_desc: "أرسل لنا متطلبات القطع أو مواصفات المواد الخاصة بك. سيقدم فريقنا الهندسي في تشجيانغ تكوين الآلة المناسب وفيديوهات اختبار القطع.",
-        btn_submit_inquiry: "إرسال الطلب وطلب عينة قطع"
+        btn_submit_inquiry: "إرسال الطلب وطلب عينة قطع",
+        nav_partners: "الشركاء",
+        ticker_title: "موثوق به من قِبل رواد الصناعة والموزعين المعتمدين عالمياً",
+        partners_eyebrow: "شبكة عالمية",
+        partners_headline: "شركاؤنا وموزعونا المعتمدون دولياً",
+        partners_desc: "فخورون بالتعاون مع كبرى الشركات المصنعة ومحولي الإعلانات ومصنعي الألواح الصوتية والموزعين المعتمدين في أكثر من 60 دولة.",
+        partners_filter_all: "جميع الشركاء (12)",
+        partners_filter_europe: "أوروبا",
+        partners_filter_americas: "الأمريكتان",
+        partners_filter_asia: "آسيا وعالمياً",
+        partners_visit_btn: "زيارة الموقع"
       }
     };
 
