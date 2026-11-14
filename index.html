@@ -2520,19 +2520,39 @@
 
       // 4. Update Video Showcase
       const videoGrid = document.getElementById('mainVideoShowcaseGrid');
-      if (videoGrid && data.videos && data.videos.length > 0) {
-        videoGrid.innerHTML = data.videos.map(v => `
-          <div class="video-thumb-card" onclick="openVideoModal('${v.title.replace(/'/g, "\\'")}', '${(v.videoUrl || '').replace(/'/g, "\\'")}')">
-            <div class="thumb-screen">
-              <div class="mini-play"><svg viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg></div>
-              <span class="thumb-time">${v.duration || '02:00'}</span>
+      if (videoGrid) {
+        const gallerySlots = (data.videoSlots || []).filter(s => s.id && s.id.startsWith('gallery_'));
+        if (gallerySlots.length > 0) {
+          videoGrid.innerHTML = gallerySlots.map((s, idx) => {
+            const hasVideo = !!(s.url && s.url.trim());
+            const displayTitle = s.label || s.defaultTitle || `Vídeo Demonstração #${idx + 1}`;
+            return `
+              <div class="video-thumb-card" onclick="openVideoModal('${s.id}', '${(s.url || '').replace(/'/g, "\\'")}')">
+                <div class="thumb-screen">
+                  <div class="mini-play"><svg viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg></div>
+                  <span class="thumb-time">${hasVideo ? '▶ ASSISTIR' : '4K DEMO'}</span>
+                </div>
+                <div class="video-thumb-info">
+                  <strong>${displayTitle}</strong>
+                  <span>${hasVideo ? 'Clique para assistir à demonstração em vídeo' : 'Demonstração de precisão e velocidade'}</span>
+                </div>
+              </div>
+            `;
+          }).join('');
+        } else if (data.videos && data.videos.length > 0) {
+          videoGrid.innerHTML = data.videos.map(v => `
+            <div class="video-thumb-card" onclick="openVideoModal('${v.title.replace(/'/g, "\\'")}', '${(v.videoUrl || '').replace(/'/g, "\\'")}')">
+              <div class="thumb-screen">
+                <div class="mini-play"><svg viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg></div>
+                <span class="thumb-time">${v.duration || '02:00'}</span>
+              </div>
+              <div class="video-thumb-info">
+                <strong>${v.title}</strong>
+                <span>${v.subtitle || v.desc || 'Demonstração de precisão e velocidade'}</span>
+              </div>
             </div>
-            <div class="video-thumb-info">
-              <strong>${v.title}</strong>
-              <span>${v.subtitle || v.desc || 'Demonstração de precisão e velocidade'}</span>
-            </div>
-          </div>
-        `).join('');
+          `).join('');
+        }
       }
     }
 
@@ -2552,35 +2572,93 @@
       });
     }
 
-    function openVideoModal(title, url) {
+    function resolveSlotVideo(slotOrTitle) {
+      try {
+        const data = typeof getTpsData === 'function' ? getTpsData() : null;
+        if (!data || !data.videoSlots) return { title: slotOrTitle, url: '' };
+
+        // 1. Direct slot ID
+        const direct = data.videoSlots.find(s => s.id === slotOrTitle);
+        if (direct && direct.url) return { title: direct.label || slotOrTitle, url: direct.url };
+
+        // 2. Keyword matching for static buttons across page
+        const q = (slotOrTitle || '').toLowerCase();
+        if (q.includes('hero') || q.includes('speed run') || q.includes('production demo')) {
+          const s = data.videoSlots.find(x => x.id === 'hero');
+          if (s && s.url) return { title: s.label || slotOrTitle, url: s.url };
+        }
+        if (q.includes('2516')) {
+          const s = data.videoSlots.find(x => x.id === 'machine_tps2516');
+          if (s && s.url) return { title: s.label || slotOrTitle, url: s.url };
+        }
+        if (q.includes('b130') || q.includes('bender')) {
+          const s = data.videoSlots.find(x => x.id === 'machine_tpsb130');
+          if (s && s.url) return { title: s.label || slotOrTitle, url: s.url };
+        }
+        if (q.includes('af3220') || q.includes('conveyor')) {
+          const s = data.videoSlots.find(x => x.id === 'machine_tpsaf3220');
+          if (s && s.url) return { title: s.label || slotOrTitle, url: s.url };
+        }
+        if (q.includes('tool') || q.includes('oscillating') || q.includes('cabeçote')) {
+          const s = data.videoSlots.find(x => x.id === 'tool_modular');
+          if (s && s.url) return { title: s.label || slotOrTitle, url: s.url };
+        }
+        if (q.includes('acrylic') || q.includes('router') || q.includes('card 1')) {
+          const s = data.videoSlots.find(x => x.id === 'gallery_1');
+          if (s && s.url) return { title: s.label || slotOrTitle, url: s.url };
+        }
+        if (q.includes('corrugated') || q.includes('packaging') || q.includes('card 2')) {
+          const s = data.videoSlots.find(x => x.id === 'gallery_2');
+          if (s && s.url) return { title: s.label || slotOrTitle, url: s.url };
+        }
+        if (q.includes('flanging') || q.includes('letter') || q.includes('card 3')) {
+          const s = data.videoSlots.find(x => x.id === 'gallery_3');
+          if (s && s.url) return { title: s.label || slotOrTitle, url: s.url };
+        }
+      } catch (err) {
+        console.warn("Slot resolver error:", err);
+      }
+      return { title: slotOrTitle, url: '' };
+    }
+
+    function openVideoModal(slotOrTitle, url) {
+      let finalTitle = slotOrTitle || 'TPS Machine Demonstration';
+      let finalUrl = url || '';
+
+      if (!finalUrl) {
+        const resolved = resolveSlotVideo(slotOrTitle);
+        finalUrl = resolved.url;
+        if (resolved.title) finalTitle = resolved.title;
+      }
+
       const modalTitle = document.getElementById('videoModalTitle');
-      if (modalTitle) modalTitle.textContent = title || 'TPS Machine Demonstration';
+      if (modalTitle) modalTitle.textContent = finalTitle;
       const playerBody = document.querySelector('.modal-player-body');
       
       if (playerBody) {
-        if (url && (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com') || url.endsWith('.mp4'))) {
+        if (finalUrl && (finalUrl.includes('youtube.com') || finalUrl.includes('youtu.be') || finalUrl.includes('vimeo.com') || finalUrl.endsWith('.mp4'))) {
           let embedHtml = '';
-          if (url.includes('youtube.com') || url.includes('youtu.be')) {
+          if (finalUrl.includes('youtube.com') || finalUrl.includes('youtu.be')) {
             let videoId = '';
-            if (url.includes('youtu.be/')) videoId = url.split('youtu.be/')[1].split('?')[0];
-            else if (url.includes('v=')) videoId = url.split('v=')[1].split('&')[0];
+            if (finalUrl.includes('youtu.be/')) videoId = finalUrl.split('youtu.be/')[1].split('?')[0];
+            else if (finalUrl.includes('v=')) videoId = finalUrl.split('v=')[1].split('&')[0];
             embedHtml = `<iframe style="width: 100%; aspect-ratio: 16/9; border: 0; border-radius: 8px;" src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-          } else if (url.includes('vimeo.com')) {
-            const vimeoId = url.split('vimeo.com/')[1].split('?')[0];
+          } else if (finalUrl.includes('vimeo.com')) {
+            const vimeoId = finalUrl.split('vimeo.com/')[1].split('?')[0];
             embedHtml = `<iframe style="width: 100%; aspect-ratio: 16/9; border: 0; border-radius: 8px;" src="https://player.vimeo.com/video/${vimeoId}?autoplay=1" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
-          } else if (url.endsWith('.mp4')) {
-            embedHtml = `<video style="width: 100%; aspect-ratio: 16/9; border-radius: 8px;" controls autoplay src="${url}"></video>`;
+          } else if (finalUrl.endsWith('.mp4')) {
+            embedHtml = `<video style="width: 100%; aspect-ratio: 16/9; border-radius: 8px;" controls autoplay src="${finalUrl}"></video>`;
           }
           playerBody.innerHTML = `
             ${embedHtml}
-            <h4 style="color: #ffffff; font-size: 18px; font-weight: 700; margin-top: 16px;" id="videoPlayerName">${title}</h4>
+            <h4 style="color: #ffffff; font-size: 18px; font-weight: 700; margin-top: 16px;" id="videoPlayerName">${finalTitle}</h4>
           `;
         } else {
           playerBody.innerHTML = `
             <div class="play-giant-btn" style="margin-bottom: 20px;">
               <svg viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
             </div>
-            <h4 style="color: #ffffff; font-size: 18px; font-weight: 700;" id="videoPlayerName">${title}</h4>
+            <h4 style="color: #ffffff; font-size: 18px; font-weight: 700;" id="videoPlayerName">${finalTitle}</h4>
             <p style="font-size: 13px; color: #9CA3AF; margin-top: 6px; max-width: 480px;">
               Demonstração de corte em alta precisão TPS Technology.
             </p>

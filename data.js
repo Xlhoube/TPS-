@@ -163,6 +163,16 @@ const DEFAULT_TPS_DATA = {
       active: true
     }
   ],
+  videoSlots: [
+    { id: "hero", label: "Topo / Hero (Botão 'Watch 4K Speed Run')", url: "", defaultTitle: "TPS-2516 Flatbed Cutter — 4K Speed Run" },
+    { id: "machine_tps2516", label: "Máquina: TPS-2516 Flatbed Cutter", url: "", defaultTitle: "TPS-2516 Demonstration & Test Cut" },
+    { id: "machine_tpsb130", label: "Máquina: TPS-B130 Letter Bender", url: "", defaultTitle: "TPS-B130 Letter Bender in Action" },
+    { id: "machine_tpsaf3220", label: "Máquina: TPS-AF3220 Conveyor System", url: "", defaultTitle: "TPS-AF3220 Continuous Conveyor Demo" },
+    { id: "tool_modular", label: "Cabeçotes Modulares (Tools Showcase)", url: "", defaultTitle: "Electric Oscillating Tool in Action" },
+    { id: "gallery_1", label: "Galeria de Vídeos — Card 1 (Acrílico / Router)", url: "", defaultTitle: "20mm Cast Acrylic Edge Milling" },
+    { id: "gallery_2", label: "Galeria de Vídeos — Card 2 (Embalagens / Cartão)", url: "", defaultTitle: "Corrugated Box Creasing & Cutting" },
+    { id: "gallery_3", label: "Galeria de Vídeos — Card 3 (Letras Corpóreas 3D)", url: "", defaultTitle: "Automated Channel Letter Bending" }
+  ],
   videos: [
     {
       id: "v-01",
@@ -244,8 +254,11 @@ function getTpsData() {
       return JSON.parse(JSON.stringify(DEFAULT_TPS_DATA));
     }
     const parsed = JSON.parse(raw);
-    // Ensure all root keys exist
-    return Object.assign({}, DEFAULT_TPS_DATA, parsed);
+    const data = Object.assign({}, DEFAULT_TPS_DATA, parsed);
+    if (!data.videoSlots || !Array.isArray(data.videoSlots) || data.videoSlots.length === 0) {
+      data.videoSlots = JSON.parse(JSON.stringify(DEFAULT_TPS_DATA.videoSlots));
+    }
+    return data;
   } catch (e) {
     console.error("Error reading TPS Data from localStorage", e);
     return JSON.parse(JSON.stringify(DEFAULT_TPS_DATA));
@@ -255,8 +268,12 @@ function getTpsData() {
 // Save State and dispatch event
 function saveTpsData(data) {
   try {
-    localStorage.setItem(TPS_STORAGE_KEY, JSON.stringify(data));
-    window.dispatchEvent(new CustomEvent('tps_data_updated', { detail: data }));
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(TPS_STORAGE_KEY, JSON.stringify(data));
+    }
+    if (typeof window !== 'undefined' && window.dispatchEvent) {
+      window.dispatchEvent(new CustomEvent('tps_data_updated', { detail: data }));
+    }
   } catch (e) {
     console.error("Error saving TPS Data", e);
   }
@@ -376,6 +393,54 @@ function saveVideo(video) {
 function deleteVideo(id) {
   const data = getTpsData();
   data.videos = data.videos.filter(v => v.id !== id);
+  saveTpsData(data);
+}
+
+// Video Slots Management (No titles or texts needed, just URL and location)
+function saveVideoSlotUrl(slotId, url) {
+  const data = getTpsData();
+  if (!data.videoSlots) data.videoSlots = JSON.parse(JSON.stringify(DEFAULT_TPS_DATA.videoSlots));
+  const slot = data.videoSlots.find(s => s.id === slotId);
+  const cleanUrl = (url || '').trim();
+  if (slot) {
+    slot.url = cleanUrl;
+  } else {
+    data.videoSlots.push({ id: slotId, label: slotId, url: cleanUrl, defaultTitle: slotId });
+  }
+  // Sync with machine if it corresponds to an equipment
+  if (slotId === 'machine_tps2516') {
+    const m = data.machines.find(x => (x.model || x.title || '').includes('2516'));
+    if (m) m.videoUrl = cleanUrl;
+  } else if (slotId === 'machine_tpsb130') {
+    const m = data.machines.find(x => (x.model || x.title || '').includes('B130'));
+    if (m) m.videoUrl = cleanUrl;
+  } else if (slotId === 'machine_tpsaf3220') {
+    const m = data.machines.find(x => (x.model || x.title || '').includes('AF3220'));
+    if (m) m.videoUrl = cleanUrl;
+  }
+  saveTpsData(data);
+  return slot;
+}
+
+function addCustomVideoSlot(url, customLabel) {
+  const data = getTpsData();
+  if (!data.videoSlots) data.videoSlots = JSON.parse(JSON.stringify(DEFAULT_TPS_DATA.videoSlots));
+  const newId = 'gallery_custom_' + Date.now();
+  const label = customLabel || `Galeria de Vídeos — Card #${data.videoSlots.filter(s => s.id.startsWith('gallery_')).length + 1}`;
+  const newSlot = {
+    id: newId,
+    label: label,
+    url: (url || '').trim(),
+    defaultTitle: label
+  };
+  data.videoSlots.push(newSlot);
+  saveTpsData(data);
+  return newSlot;
+}
+
+function deleteVideoSlot(slotId) {
+  const data = getTpsData();
+  data.videoSlots = data.videoSlots.filter(s => s.id !== slotId);
   saveTpsData(data);
 }
 
